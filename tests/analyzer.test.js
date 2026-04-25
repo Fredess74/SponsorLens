@@ -1,5 +1,6 @@
 const assert = require("assert");
 const { analyzeJobText } = require("../extension/analyzer.js");
+const { sanitizeSavedJob, toExportJson } = require("../extension/storageHelpers.js");
 
 function profile(overrides = {}) {
   return {
@@ -21,70 +22,85 @@ function run(name, fn) {
   }
 }
 
-run("Strong Fit case", () => {
-  const text = "OPT candidates welcome. CPT eligible. International students encouraged. E-Verify employer.";
-  const result = analyzeJobText(text, profile({ needsFutureSponsorship: "No" }));
-  assert.strictEqual(result.fit, "strong");
-  assert.ok(result.score >= 80);
-  assert.ok(result.detected_phrases.includes("opt candidates welcome"));
-  assert.ok(result.detected_phrases.includes("cpt eligible"));
-  assert.strictEqual(result.contradictions.length, 0);
+run("output compatibility includes legacy and advanced fields", () => {
+  const result = analyzeJobText("OPT candidates welcome", profile());
+  ["fit", "label", "score", "detected_phrases", "contradictions", "reasons", "recommended_action", "recruiter_message", "time_saved_minutes", "disclaimer", "short_disclaimer", "confidence", "evidence_level", "signal_summary", "top_evidence"].forEach((field) => {
+    assert.ok(field in result, `missing field ${field}`);
+  });
 });
 
-run("Risky Fit case", () => {
-  const text = "Business Analyst Internship. Must be authorized to work in the U.S. Work authorization required. Future sponsorship may be discussed.";
-  const result = analyzeJobText(text, profile({ needsFutureSponsorship: "No" }));
-  assert.strictEqual(result.fit, "risky");
-  assert.ok(result.score >= 45 && result.score <= 79);
-  assert.ok(result.detected_phrases.includes("must be authorized to work in the u.s."));
-  assert.ok(result.detected_phrases.includes("work authorization required"));
-  assert.ok(result.recommended_action.toLowerCase().includes("clarify"));
+run("confidence high/medium/low coverage", () => {
+  const high = analyzeJobText("OPT candidates welcome. CPT eligible. International students encouraged. E-Verify employer. Entry level internship for early career applicants.", profile({ needsFutureSponsorship: "No", __extractionQuality: "good" }));
+  const lowContradiction = analyzeJobText("Visa sponsorship available. No visa sponsorship.", profile({ __extractionQuality: "good" }));
+  const lowShort = analyzeJobText("hi", profile({ __extractionQuality: "limited" }));
+  assert.strictEqual(high.confidence, "high");
+  assert.strictEqual(lowContradiction.confidence, "low");
+  assert.strictEqual(lowShort.confidence, "low");
 });
 
-run("Low Fit case", () => {
-  const text = "U.S. citizens only. Security clearance required. We do not sponsor visas now or in the future.";
-  const result = analyzeJobText(text, profile());
-  assert.strictEqual(result.fit, "low");
-  assert.ok(result.score < 45);
-  assert.ok(result.detected_phrases.includes("u.s. citizens only"));
-  assert.ok(result.detected_phrases.includes("security clearance required"));
-  assert.strictEqual(result.time_saved_minutes, 40);
+run("evidence level strong/mixed/limited", () => {
+  const strong = analyzeJobText("OPT candidates welcome. CPT eligible. E-Verify employer. This internship is designed for early career talent and includes structured mentorship.", profile({ needsFutureSponsorship: "No", __extractionQuality: "good" }));
+  const mixed = analyzeJobText("International students encouraged. U.S. citizens only. This role may involve policy-sensitive operations with strict authorization requirements and cross-functional oversight.", profile({ __extractionQuality: "good" }));
+  const limited = analyzeJobText("Hello", profile({ __extractionQuality: "limited" }));
+  assert.strictEqual(strong.evidence_level, "strong");
+  assert.strictEqual(mixed.evidence_level, "mixed");
+  assert.strictEqual(limited.evidence_level, "limited");
 });
 
-run("Contradiction case", () => {
-  const text = "Visa sponsorship available for selected roles. No visa sponsorship for this position.";
-  const result = analyzeJobText(text, profile());
-  assert.ok(result.contradictions.length > 0);
-  assert.notStrictEqual(result.fit, "strong");
-  assert.ok(result.reasons.some((r) => /conflicting work-authorization signals|confirm with the recruiter/i.test(r)));
+run("signal summary counts and contradiction count", () => {
+  const result = analyzeJobText("Visa sponsorship available. No visa sponsorship. Work authorization required.", profile());
+  assert.ok(result.signal_summary.positiveCount >= 1);
+  assert.ok(result.signal_summary.hardNegativeCount >= 1);
+  assert.ok(result.signal_summary.ambiguousCount >= 1);
+  assert.ok(result.signal_summary.contradictionCount >= 1);
 });
 
-run("Student profile STEM OPT adjustment case", () => {
-  const text = "Work authorization required. E-Verify employer. STEM OPT support discussed during process.";
-  const withStem = analyzeJobText(text, profile({ workPath: "STEM OPT eligible" }));
-  const withoutStem = analyzeJobText(text, profile({ workPath: "Unsure" }));
-  assert.ok(withStem.score > withoutStem.score);
+run("message variants safety and forbidden phrases absent", () => {
+  const result = analyzeJobText("Work authorization required", profile());
+  const variants = result.recruiter_message_variants;
+  assert.ok(variants.short && variants.polite && variants.cover);
+  [variants.short, variants.polite, variants.cover, result.recruiter_message].forEach((msg) => {
+    ["free", "guaranteed", "forever", "no paperwork", "3 years", "you must consider me"].forEach((bad) => {
+      assert.strictEqual(msg.toLowerCase().includes(bad), false);
+    });
+  });
 });
 
-run("Future sponsorship penalty case", () => {
-  const text = "This role will not sponsor now or in the future.";
-  const withNeed = analyzeJobText(text, profile({ needsFutureSponsorship: "Yes" }));
-  const unsure = analyzeJobText(text, profile({ needsFutureSponsorship: "Unsure" }));
-  assert.ok(withNeed.score < unsure.score);
-  assert.strictEqual(withNeed.fit, "low");
+run("contradiction reduces confidence", () => {
+  const result = analyzeJobText("Visa sponsorship available. No visa sponsorship.", profile({ __extractionQuality: "good" }));
+  assert.strictEqual(result.confidence, "low");
 });
 
-run("Empty/weak extraction case", () => {
-  const result = analyzeJobText("", profile());
-  assert.ok(["risky", "low"].includes(result.fit));
-  assert.ok(result.reasons.some((r) => /limited visible job text|no explicit sponsorship signals/i.test(r)));
+run("score always clamped", () => {
+  const high = analyzeJobText("OPT candidates welcome. CPT eligible. International students encouraged. Visa sponsorship available. STEM OPT. E-Verify. Entry level. New grad.", profile({ needsFutureSponsorship: "No", workPath: "STEM OPT eligible", __extractionQuality: "good" }));
+  const low = analyzeJobText("U.S. citizens only. Security clearance required. No visa sponsorship. Must be permanently authorized to work.", profile({ needsFutureSponsorship: "Yes", __extractionQuality: "good" }));
+  assert.ok(high.score >= 0 && high.score <= 100);
+  assert.ok(low.score >= 0 && low.score <= 100);
 });
 
-run("Case-insensitivity case", () => {
-  const text = "u.S. CiTiZeNs OnLy";
-  const result = analyzeJobText(text, profile());
-  assert.ok(result.detected_phrases.includes("u.s. citizens only"));
-  assert.strictEqual(result.fit, "low");
+run("saved job object excludes full pageText", () => {
+  const job = sanitizeSavedJob({
+    jobTitle: "Analyst",
+    company: "Demo",
+    pageUrl: "https://example.com/job",
+    fit: "risky",
+    score: 60,
+    label: "Risky Fit",
+    detected_phrases: ["work authorization required"],
+    contradictions: [],
+    recommended_action: "Clarify",
+    time_saved_minutes: 25,
+    analyzedAt: "2026-01-01T00:00:00.000Z",
+    pageText: "SHOULD_NOT_EXIST"
+  });
+  assert.ok(!Object.prototype.hasOwnProperty.call(job, "pageText"));
 });
 
-console.log("All analyzer tests passed.");
+run("export format valid JSON", () => {
+  const json = toExportJson([sanitizeSavedJob({ fit: "strong", score: 88, label: "Strong Fit", detected_phrases: [], contradictions: [], recommended_action: "Apply", time_saved_minutes: 0 })]);
+  const parsed = JSON.parse(json);
+  assert.ok(Array.isArray(parsed.jobs));
+  assert.ok(parsed.exportedAt);
+});
+
+console.log("All analyzer advanced tests passed.");

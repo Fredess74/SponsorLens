@@ -23,100 +23,82 @@
       <section class="card">
         <h2>Student Profile (Optional)</h2>
         <div class="form-grid">
-          <label>Current status
-            <select id="currentStatus">
-              <option>F-1</option>
-              <option>Other</option>
-              <option>Prefer not to say</option>
-            </select>
-          </label>
-          <label>Work path
-            <select id="workPath">
-              <option>CPT seeking</option>
-              <option>OPT eligible</option>
-              <option>STEM OPT eligible</option>
-              <option>Already on OPT</option>
-              <option>Unsure</option>
-            </select>
-          </label>
-          <label>Looking for
-            <select id="lookingFor">
-              <option>Internship</option>
-              <option>Full-time</option>
-              <option>Both</option>
-            </select>
-          </label>
-          <label>Needs future sponsorship
-            <select id="needsSponsorship">
-              <option>Yes</option>
-              <option>No</option>
-              <option>Unsure</option>
-            </select>
-          </label>
+          <label for="currentStatus">Current status</label>
+          <select id="currentStatus" name="currentStatus"><option>F-1</option><option>Other</option><option>Prefer not to say</option></select>
+          <label for="workPath">Work path</label>
+          <select id="workPath" name="workPath"><option>CPT seeking</option><option>OPT eligible</option><option>STEM OPT eligible</option><option>Already on OPT</option><option>Unsure</option></select>
+          <label for="lookingFor">Looking for</label>
+          <select id="lookingFor" name="lookingFor"><option>Internship</option><option>Full-time</option><option>Both</option></select>
+          <label for="needsSponsorship">Needs future sponsorship</label>
+          <select id="needsSponsorship" name="needsSponsorship"><option>Yes</option><option>No</option><option>Unsure</option></select>
         </div>
       </section>
 
-      <button id="analyzeBtn" class="primary-btn">Analyze this job</button>
+      <button id="analyzeBtn" class="primary-btn" type="button">Analyze this job</button>
 
       <section class="card demo-card">
         <h2>Demo Mode</h2>
         <div class="demo-actions">
-          <button class="secondary-btn" data-demo="strong">Demo: Strong Fit</button>
-          <button class="secondary-btn" data-demo="risky">Demo: Risky Fit</button>
-          <button class="secondary-btn" data-demo="low">Demo: Low Fit</button>
+          <button class="secondary-btn" type="button" data-demo="strong">Demo: Strong Fit</button>
+          <button class="secondary-btn" type="button" data-demo="risky">Demo: Risky Fit</button>
+          <button class="secondary-btn" type="button" data-demo="low">Demo: Low Fit</button>
         </div>
       </section>
 
-      <section id="resultCard" class="card result hidden">
+      <section id="resultCard" class="card result hidden" aria-live="polite">
         <div class="result-header">
           <h2 id="fitLabel">Verdict</h2>
           <span id="scoreBadge" class="score-pill">0</span>
         </div>
-
+        <p id="jobMetaLine" class="meta-line"></p>
         <p id="textLength" class="meta-line"></p>
-        <p class="score-note">Score is based on visible job language, student profile, contradictions, and known work-authorization signals.</p>
+        <p id="qualityLine" class="meta-line"></p>
+        <p id="confidenceLine" class="meta-line"></p>
+        <p id="demoHint" class="hint hidden">Tip: Extraction looked limited. Use Demo Mode for a clean walkthrough.</p>
 
         <div class="section">
-          <h3>Why this matters</h3>
-          <ul id="reasonsList"></ul>
+          <h3>Top evidence</h3>
+          <ul id="topEvidenceList"></ul>
         </div>
 
-        <div class="section">
-          <h3>Detected phrases</h3>
-          <ul id="phrasesList"></ul>
-        </div>
+        <div class="section"><h3>Why this matters</h3><ul id="reasonsList"></ul></div>
+        <div class="section"><h3>Detected phrases</h3><ul id="phrasesList"></ul></div>
+        <div class="section"><h3>Contradictions</h3><ul id="contradictionsList"></ul></div>
+        <div class="section"><h3>Recommended action</h3><p id="recommendedAction"></p></div>
 
         <div class="section">
-          <h3>Contradictions</h3>
-          <ul id="contradictionsList"></ul>
-        </div>
-
-        <div class="section">
-          <h3>Recommended action</h3>
-          <p id="recommendedAction"></p>
-        </div>
-
-        <div class="section">
-          <h3>Recruiter-safe message</h3>
+          <h3>Recruiter message studio</h3>
+          <div class="variant-actions">
+            <button type="button" class="secondary-btn variant-btn" data-variant="short">Short clarification</button>
+            <button type="button" class="secondary-btn variant-btn" data-variant="polite">Polite recruiter message</button>
+            <button type="button" class="secondary-btn variant-btn" data-variant="cover">Cover letter paragraph</button>
+          </div>
           <textarea id="recruiterMessage" readonly></textarea>
-          <button id="copyBtn" class="secondary-btn">Copy message</button>
+          <div class="inline-actions">
+            <button id="copyBtn" class="secondary-btn" type="button">Copy selected message</button>
+            <button id="saveBtn" class="secondary-btn" type="button">Save analysis</button>
+          </div>
         </div>
 
-        <div class="section">
-          <h3>Estimated time saved</h3>
-          <p id="timeSaved"></p>
-        </div>
+        <div class="section"><h3>Estimated time saved</h3><p id="timeSaved"></p></div>
+        <div class="section disclaimer"><h3>Disclaimer</h3><p id="disclaimerText">Not legal advice. SponsorLens provides general job-search guidance only.</p></div>
+      </section>
 
-        <div class="section disclaimer">
-          <h3>Disclaimer</h3>
-          <p id="disclaimerText">Not legal advice. SponsorLens provides general job-search guidance only.</p>
+      <section class="card">
+        <h2>Saved Jobs</h2>
+        <p id="savedSummary" class="meta-line">No saved analyses yet.</p>
+        <ul id="savedJobsList"></ul>
+        <div class="inline-actions">
+          <button id="exportSavedBtn" class="secondary-btn" type="button">Export JSON</button>
+          <button id="clearSavedBtn" class="secondary-btn" type="button">Clear saved jobs</button>
         </div>
       </section>
 
-      <p id="statusText" class="status"></p>
+      <p id="statusText" class="status" role="status" aria-live="polite"></p>
     </main>
 
     <script src="analyzer.js"></script>
+    <script src="storageHelpers.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

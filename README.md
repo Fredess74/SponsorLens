@@ -1,59 +1,41 @@
 # SponsorLens
 **Apply smarter as an international student.**
 
-SponsorLens is a local-first Chrome Extension MVP for the OpenAI Codex Creator Challenge. It helps international students analyze visible job posting language for work-authorization friction, contradictions, and application risk.
+SponsorLens is a local-first Manifest V3 Chrome extension MVP for the OpenAI Codex Creator Challenge. It helps international students interpret visible job-posting language and decide whether a role is **Strong Fit**, **Risky Fit**, or **Low Fit**.
 
-## Problem
-International students (especially F-1 students navigating CPT/OPT/STEM OPT pathways) often face unclear or contradictory sponsorship language. Job board fields can be incomplete, ambiguous, or conflict with the description itself.
+## Advanced MVP Features
+- Evidence-based analyzer with confidence + evidence level
+- Contradiction detection and fit guardrails
+- Recruiter Message Studio (short/polite/cover variants)
+- Saved Job Tracker (local summaries only)
+- Demo mode for reliable pitch walkthroughs
 
-## Solution
-SponsorLens adds a decision-support layer:
-1. Extract visible job text.
-2. Detect work-authorization signals.
-3. Flag contradictions.
-4. Apply student-profile-aware scoring.
-5. Return **Strong Fit / Risky Fit / Low Fit** with reasons and next steps.
+## Saved Job Tracker
+Users can save analysis summaries locally and view:
+- Strong/Risky/Low saved counts
+- total estimated time saved
+- last 5 saved analyses
+- clear and export JSON actions
 
-> SponsorLens does not replace Handshake. It interprets visible posting language and adds profile-aware guidance.
+Saved records intentionally exclude full page text.
 
-## Why useful even with Handshake fields
-- Employer fields are self-reported.
-- Fields can be ambiguous.
-- Job descriptions may contradict checkboxes.
-- Students need profile-aware interpretation, not just raw values.
-- Students need next-step messaging for recruiter clarification.
-- SponsorLens works across Handshake and other job pages.
+## Local-first by default
+- No backend required
+- No OpenAI API key required
+- No external runtime API calls in extension mode
 
-## Features
-- Manifest V3 Chrome extension MVP
-- Local phrase scanner and contradiction detector
-- Student profile matching via `chrome.storage.local`
-- Strong/Risky/Low fit score and explanation layer
-- Recruiter-safe message generator
-- Demo mode (Strong / Risky / Low)
-- Privacy-first, local-only analysis
+## Optional AI Backend (future-ready skeleton)
+An optional `backend/` folder provides `POST /explain` with deterministic mock output.
+- Not required for local extension demo
+- Not connected by default
+- API keys (future) must remain server-side only
 
-## Privacy and disclaimer
-- No resumes collected
-- No immigration documents collected
-- No government IDs collected
-- No external API calls in MVP
-- Optional student profile stored locally only
+See [docs/API_MODE.md](docs/API_MODE.md).
 
-SponsorLens is a non-commercial educational prototype. It does not provide legal, immigration, or employment advice and does not guarantee sponsorship, eligibility, or hiring outcomes.
+## Important credits note
+Codex student challenge credits are for building with Codex, not runtime OpenAI API billing credits.
 
-## Documentation
-- [PRD](docs/PRD.md)
-- [Kano Model](docs/KANO.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Scoring Model](docs/SCORING_MODEL.md)
-- [Privacy & Compliance](docs/PRIVACY_AND_COMPLIANCE.md)
-- [Demo Script](docs/DEMO_SCRIPT.md)
-- [Test Plan](docs/TEST_PLAN.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Challenge Submission](docs/CHALLENGE_SUBMISSION.md)
-
-## Run tests
+## Run all checks
 ```bash
 npm test
 ```
@@ -63,11 +45,29 @@ npm test
 2. Enable Developer Mode
 3. Click **Load unpacked**
 4. Select the `extension/` folder
-5. Open a job posting
-6. Click the SponsorLens icon
+5. Open a job posting page
+6. Click SponsorLens icon
 
+## Security & Privacy
+- [Security policy](SECURITY.md)
+- [Threat model](docs/THREAT_MODEL.md)
+- [Privacy & Compliance](docs/PRIVACY_AND_COMPLIANCE.md)
 
-> Note: This repository currently avoids binary image assets to keep PR tooling compatible (default Chrome extension icon is used).
+## Documentation
+- [Architecture](docs/ARCHITECTURE.md)
+- [Scoring Model](docs/SCORING_MODEL.md)
+- [Demo Script](docs/DEMO_SCRIPT.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Challenge Submission](docs/CHALLENGE_SUBMISSION.md)
+- [API Mode Notes](docs/API_MODE.md)
+- [QA Checklist](docs/QA_CHECKLIST.md)
+
+## CI
+GitHub Actions workflow runs:
+- `npm test`
+- manifest JSON validation
+
+> Note: repository intentionally avoids binary icon assets for PR compatibility; Chrome default icon is used.
 
 ## Built for
 OpenAI Codex Creator Challenge.

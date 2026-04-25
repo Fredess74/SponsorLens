@@ -1,24 +1,25 @@
 # SponsorLens Privacy & Compliance (MVP)
 
-## Local-first MVP
-SponsorLens processes job posting text locally in the browser extension.
+## Local-first default
+SponsorLens processes job content locally in the extension by default.
 
-## Data Collection Boundaries
+## Data boundaries
 - No resumes collected
 - No immigration documents collected
 - No government IDs collected
-- No external API calls
-- Optional profile stored locally only (`chrome.storage.local`)
+- No personal identifiers intentionally collected
+- No external API calls in default mode
 
-## Advice and Guarantee Boundaries
+## What is stored locally
+- Optional student profile (`chrome.storage.local`)
+- Optional saved analysis summaries (title/company/url/fit/score/reasons metadata)
+- **Not stored:** full extracted page text
+
+## Advice boundary
 - Not legal advice
 - Not immigration advice
 - Not employment advice
-- No guarantee of sponsorship or eligibility
+- No guarantee of sponsorship, eligibility, or hiring outcomes
 
-## Prototype Classification
-- Non-commercial educational prototype
-- Built for the OpenAI Codex Creator Challenge
-
-## Future Commercialization Note
-If SponsorLens evolves beyond MVP, product and policy changes should include legal counsel and university/DSO-informed review, plus explicit user consent architecture.
+## Prototype status
+Non-commercial educational prototype for the OpenAI Codex Creator Challenge.

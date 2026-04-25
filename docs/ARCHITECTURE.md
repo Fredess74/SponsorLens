@@ -1,35 +1,27 @@
-# SponsorLens Architecture (MVP)
+# SponsorLens Architecture (Advanced Local-First MVP)
 
-## Stack
-- Chrome Extension Manifest V3
-- Plain HTML/CSS/JavaScript
-- No backend
-- No external API calls
+## Current default architecture (local mode)
+- Manifest V3 popup extension with minimal permissions.
+- `content.js` extracts visible text + metadata from the active page.
+- `analyzer.js` scores signals locally and returns fit + confidence/evidence data.
+- `popup.js` renders results, message studio, and saved-job tracker.
+- `chrome.storage.local` stores optional student profile and saved analysis records (no full page text).
 
-## Components
-- `content.js`: extracts visible page text (title, heading, company-like text, main/article, body fallback).
-- `popup.js`: controls UI, storage, interactions, and rendering.
-- `analyzer.js`: local scoring engine with contradiction detection and message generation.
-- `chrome.storage.local`: stores optional student profile.
-
-## Data Flow
+### Data flow
 User opens job posting  
 → Clicks SponsorLens  
-→ content.js extracts visible text  
-→ popup sends text to analyzer  
-→ analyzer detects phrases and contradictions  
-→ result card displays verdict, reasons, action, and recruiter message
+→ `content.js` extracts visible text + metadata  
+→ `popup.js` calls `analyzer.js` locally  
+→ result card shows verdict, evidence, action, and message studio  
+→ optional save stores summary fields only
 
-## Security/Privacy Posture
-- Local-only processing in MVP
-- No outbound data pipeline
-- Minimal extension permissions
+## Optional backend architecture (not default)
+- `backend/server.js` exposes `POST /explain`.
+- Returns deterministic mock explanation when no API key exists.
+- Intended future place for server-side LLM explanations.
+- Extension is not wired to backend by default.
 
-## Future Backend Sketch (Post-MVP)
-Potential architecture if expanded later:
-- Optional API layer for richer explanation and normalization
-- Privacy-safe telemetry with explicit consent
-- Employer signal knowledge service
-- Role/company normalization service
-
-Not included in current challenge MVP.
+## Security boundaries
+- Local-first default, no external runtime calls from extension.
+- API keys (future) must stay server-side only.
+- No legal/immigration outcome guarantees.

@@ -1,57 +1,27 @@
-# SponsorLens Scoring Model
+# SponsorLens Scoring Model (Advanced MVP)
 
-## Baseline
-- Start score: **70**
+## Base scoring
+- Start at 70
+- Apply weighted hard-negative, ambiguous, and positive signals
+- Clamp score between 0 and 100
 
-## Hard Negative Signals (large penalties)
-Examples:
-- U.S. citizens only
-- Security clearance required
-- No visa sponsorship
-- Must be permanently authorized
+## Advanced outputs
+- `confidence`: high/medium/low
+- `evidence_level`: strong/mixed/limited
+- `signal_summary` counts by signal severity and contradiction count
+- `top_evidence` list for user transparency
 
-These can quickly move a role into Low Fit territory.
+## Confidence logic
+- Low when extraction/text is limited or contradictions exist
+- High when evidence is strong and internally consistent
+- Medium otherwise
 
-## Ambiguous Signals (moderate penalties)
-Examples:
-- Authorized to work in the U.S.
-- Work authorization required
-- Future sponsorship language
+## Evidence level
+- Strong: clear directional signals without conflict
+- Mixed: positive and restrictive conflict
+- Limited: too little text or too few reliable signals
 
-These often indicate risk and need recruiter clarification.
-
-## Positive Signals (boosts)
-Examples:
-- OPT candidates welcome
-- CPT eligible
-- International students encouraged
-- Visa sponsorship available
-- STEM OPT / E-Verify
-
-## Student Profile Adjustments
-- STEM OPT eligible + STEM OPT/E-Verify language: boost
-- CPT seeking + internship/CPT language: boost
-- Needs future sponsorship = Yes + no-sponsorship language: additional penalty
-- Needs future sponsorship = Unsure + ambiguous language: small penalty
-- Looking for Internship + internship mention: boost
-- Looking for Full-time + full-time/entry-level language: boost
-
-## Contradiction Rules
-Flag when positive and restrictive sponsorship signals coexist (e.g., “visa sponsorship available” + “no visa sponsorship”).
-
-When contradictions exist:
-- Add contradiction reasons.
-- Cap confidence (Strong can be reduced to Risky unless signals are overwhelmingly positive).
-
-## Fit Thresholds
-- **80–100:** Strong Fit
-- **45–79:** Risky Fit
-- **0–44:** Low Fit
-
-## Limitations
-- Uses visible text only (site structure may vary).
-- Rule-based approach cannot infer hidden policy or recruiter intent.
-- Does not determine legal eligibility.
-
-## Decision-support framing
-This is **not** a visa predictor. SponsorLens is a decision-support tool that helps students prioritize time and ask better clarification questions.
+## Guardrails
+- Citizenship/security-clearance restrictions cap fit toward Low
+- Contradictions usually prevent Strong Fit
+- Tool remains decision-support only, not visa prediction

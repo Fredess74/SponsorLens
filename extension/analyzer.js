@@ -8,98 +8,105 @@
   const DISCLAIMER_FULL =
     "SponsorLens is a non-commercial educational prototype. It does not provide legal, immigration, or employment advice. It does not guarantee visa sponsorship, job eligibility, or hiring outcomes. It provides general job-search guidance based on visible posting language.";
 
-  const DISCLAIMER_SHORT =
-    "Not legal advice. SponsorLens provides general job-search guidance only.";
+  const DISCLAIMER_SHORT = "Not legal advice. SponsorLens provides general job-search guidance only.";
 
-  const PHRASE_GROUPS = {
-    hardNegative: {
-      "u.s. citizens only": -60,
-      "us citizens only": -60,
-      "security clearance required": -50,
-      "must be eligible for security clearance": -45,
-      "no visa sponsorship": -40,
-      "no sponsorship": -40,
-      "we do not sponsor": -40,
-      "sponsorship is not available": -40,
-      "must not require sponsorship now or in the future": -45,
-      "will not sponsor now or in the future": -45,
-      "must be permanently authorized to work": -35,
-      "permanent work authorization": -35,
-      "green card or u.s. citizen": -50,
-      "citizen or permanent resident": -40
-    },
-    ambiguous: {
-      "must be authorized to work in the u.s.": -10,
-      "legally authorized to work in the united states": -10,
-      "work authorization required": -10,
-      "authorized to work without restriction": -20,
-      "future sponsorship": -15
-    },
-    positive: {
-      "opt candidates welcome": 30,
-      "cpt eligible": 25,
-      "cpt candidates welcome": 25,
-      "international students encouraged": 25,
-      "visa sponsorship available": 30,
-      "sponsorship available": 25,
-      "stem opt": 20,
-      "e-verify": 15,
-      internship: 10,
-      "entry level": 10,
-      "new grad": 10
-    }
-  };
+  const SIGNALS = [
+    { id: "visa_sponsorship_available", label: "visa sponsorship available", severity: "positive", score: 30, blockTag: "sponsorship_available", patterns: [/\bvisa\s+sponsorship\s+available\b/i] },
+    { id: "sponsorship_available", label: "sponsorship available", severity: "positive", score: 25, requiresNoTag: "sponsorship_available", patterns: [/\bsponsorship\s+available\b/i] },
+    { id: "opt_candidates_welcome", label: "OPT candidates welcome", severity: "positive", score: 30, patterns: [/\bopt\s+candidates?\s+welcome\b/i] },
+    { id: "cpt_eligible", label: "CPT eligible", severity: "positive", score: 25, patterns: [/\bcpt\s+eligible\b/i] },
+    { id: "cpt_candidates_welcome", label: "CPT candidates welcome", severity: "positive", score: 25, patterns: [/\bcpt\s+candidates?\s+welcome\b/i] },
+    { id: "international_students_encouraged", label: "international students encouraged", severity: "positive", score: 25, patterns: [/\binternational\s+students?\s+encouraged\b/i] },
+    { id: "stem_opt", label: "STEM OPT", severity: "positive", score: 20, patterns: [/\bstem\s*opt\b/i] },
+    { id: "e_verify", label: "E-Verify", severity: "positive", score: 15, patterns: [/\be[-\s]?verify\b/i] },
+    { id: "internship", label: "internship", severity: "positive", score: 10, patterns: [/\bintern(ship|s)?\b/i] },
+    { id: "entry_level", label: "entry level", severity: "positive", score: 10, patterns: [/\bentry[-\s]?level\b/i] },
+    { id: "new_grad", label: "new grad", severity: "positive", score: 10, patterns: [/\bnew\s+grad(uate)?s?\b/i] },
+    { id: "early_career", label: "early career", severity: "positive", score: 10, patterns: [/\bearly\s+career\b/i] },
+
+    { id: "us_citizens_only", label: "U.S. citizens only", severity: "hard_negative", score: -60, patterns: [/\bu\.?s\.?\s+citizens?\s+only\b/i, /\bus\s+citizens?\s+only\b/i] },
+    { id: "us_citizenship_required", label: "U.S. citizenship required", severity: "hard_negative", score: -60, patterns: [/\bu\.?s\.?\s+citizenship\s+required\b/i, /\bunited\s+states\s+citizenship\s+required\b/i, /\bmust\s+be\s+a\s+u\.?s\.?\s+citizen\b/i] },
+    { id: "security_clearance_required", label: "security clearance required", severity: "hard_negative", score: -50, patterns: [/\bsecurity\s+clearance\s+required\b/i, /\bactive\s+security\s+clearance\b/i] },
+    { id: "eligible_for_security_clearance", label: "must be eligible for security clearance", severity: "hard_negative", score: -45, patterns: [/\bmust\s+be\s+eligible\s+for\s+security\s+clearance\b/i] },
+    { id: "no_visa_sponsorship", label: "no visa sponsorship", severity: "hard_negative", score: -40, blockTag: "no_sponsorship", patterns: [/\bno\s+visa\s+sponsorship\b/i] },
+    { id: "no_sponsorship_available", label: "no sponsorship available", severity: "hard_negative", score: -40, requiresNoTag: "no_sponsorship", blockTag: "no_sponsorship", patterns: [/\bno\s+sponsorship\s+available\b/i, /\bsponsorship\s+not\s+available\b/i, /\bwe\s+do\s+not\s+sponsor\b/i, /\bwe\s+are\s+unable\s+to\s+sponsor\b/i] },
+    { id: "no_future_sponsorship", label: "will not sponsor now or in the future", severity: "hard_negative", score: -45, blockTag: "no_sponsorship", patterns: [/\bmust\s+not\s+require\s+sponsorship\s+now\s+or\s+in\s+the\s+future\b/i, /\bwill\s+not\s+sponsor\s+now\s+or\s+in\s+the\s+future\b/i] },
+    { id: "permanently_authorized", label: "must be permanently authorized to work", severity: "hard_negative", score: -35, patterns: [/\bmust\s+be\s+permanently\s+authorized\s+to\s+work\b/i, /\bpermanent\s+work\s+authorization\s+required\b/i, /\bpermanent\s+work\s+authorization\b/i] },
+    { id: "green_card_or_citizen", label: "green card or U.S. citizen", severity: "hard_negative", score: -50, patterns: [/\bgreen\s+card\s+or\s+u\.?s\.?\s+citizen\b/i, /\bcitizen\s+or\s+permanent\s+resident\b/i, /\blawful\s+permanent\s+resident\s+or\s+citizen\b/i] },
+
+    { id: "authorized_to_work_us", label: "must be authorized to work in the U.S.", severity: "ambiguous", score: -10, patterns: [/\bmust\s+be\s+authorized\s+to\s+work\s+in\s+the\s+u\.?s\.?\b/i] },
+    { id: "legally_authorized_us", label: "legally authorized to work in the United States", severity: "ambiguous", score: -10, patterns: [/\blegally\s+authorized\s+to\s+work\s+in\s+the\s+united\s+states\b/i] },
+    { id: "work_authorization_required", label: "work authorization required", severity: "ambiguous", score: -10, patterns: [/\bwork\s+authorization\s+required\b/i, /\bemployment\s+authorization\b/i, /\bwork\s+eligibility\b/i] },
+    { id: "without_restriction", label: "authorized to work without restriction", severity: "ambiguous", score: -20, patterns: [/\bauthorized\s+to\s+work\s+without\s+restriction\b/i] },
+    { id: "future_sponsorship", label: "future sponsorship", severity: "ambiguous", score: -15, patterns: [/\bfuture\s+sponsorship\b/i, /\bmay\s+require\s+sponsorship\b/i, /\brequire\s+sponsorship\s+in\s+the\s+future\b/i] }
+  ];
 
   const RECOMMENDED_ACTIONS = {
-    strong:
-      "Apply and tailor your application. Include your work-authorization timeline only if the employer asks or if clarification would help.",
-    risky:
-      "Do not spend 40 minutes on a full application yet. First, ask the recruiter to clarify whether candidates with your work-authorization path are considered.",
-    low:
-      "Skip this role unless you have independent confirmation from the recruiter. The posting contains restrictive language that may conflict with your current profile."
+    strong: "Apply and tailor your application. Include your work-authorization timeline only if the employer asks or if clarification would help.",
+    risky: "Do not spend 40 minutes on a full application yet. First, ask the recruiter to clarify whether candidates with your work-authorization path are considered.",
+    low: "Skip this role unless you have independent confirmation from the recruiter. The posting contains restrictive language that may conflict with your current profile."
   };
 
-  const RECRUITER_MESSAGES = {
-    strong:
-      "Hi, I’m interested in this role and wanted to confirm whether candidates with F-1 OPT/CPT work authorization are considered. I’m happy to clarify my work-authorization timeline if helpful.",
-    risky:
-      "Hi, I’m very interested in this role. Before completing the full application, I wanted to clarify whether candidates with F-1 OPT or CPT work authorization are considered for this position. I understand this depends on company policy and role requirements, and I’d be happy to provide more context if helpful.",
-    low:
-      "Hi, I’m interested in this position, but I noticed language about work authorization requirements. Could you confirm whether candidates with temporary F-1 OPT/CPT work authorization are eligible to be considered for this role?"
+  const MESSAGE_VARIANTS = {
+    strong: {
+      short: "Could you confirm whether candidates with F-1 OPT/CPT work authorization are considered for this role?",
+      polite: "Hi, I’m interested in this role. Could you confirm whether candidates with F-1 OPT/CPT work authorization are considered? I’d be happy to clarify my timeline if helpful.",
+      cover: "I am excited about this opportunity and would appreciate clarification on whether candidates with F-1 OPT/CPT work authorization are considered. I understand eligibility depends on role requirements and company policy, and I can provide my work-authorization timeline if useful."
+    },
+    risky: {
+      short: "Before I complete the full application, could you clarify whether F-1 OPT/CPT candidates are considered?",
+      polite: "Hi, I’m very interested in this role. Before completing the full application, could you confirm whether candidates with F-1 OPT or CPT work authorization are considered? I understand this depends on policy and role requirements.",
+      cover: "I’m interested in this role and wanted to respectfully confirm work-authorization alignment before investing in the full process. Could you share whether candidates on F-1 OPT/CPT are considered for this position? I can provide additional context as needed."
+    },
+    low: {
+      short: "Could you confirm whether temporary F-1 OPT/CPT work authorization is eligible for consideration here?",
+      polite: "Hi, I’m interested in this position, but I noticed language about work-authorization requirements. Could you confirm whether temporary F-1 OPT/CPT work authorization is considered for this role?",
+      cover: "I noticed restrictive work-authorization language in the posting and wanted to confirm eligibility criteria before applying. If candidates with temporary F-1 OPT/CPT authorization can still be considered, I would appreciate your guidance on next steps."
+    }
   };
-
-  const NO_SPONSORSHIP_PHRASES = [
-    "no visa sponsorship",
-    "no sponsorship",
-    "we do not sponsor",
-    "sponsorship is not available",
-    "must not require sponsorship now or in the future",
-    "will not sponsor now or in the future"
-  ];
-
-  const POSITIVE_SPONSORSHIP_PHRASES = [
-    "visa sponsorship available",
-    "sponsorship available",
-    "international students encouraged",
-    "opt candidates welcome",
-    "cpt eligible",
-    "cpt candidates welcome"
-  ];
 
   function normalize(text) {
     return (text || "").toLowerCase().replace(/\s+/g, " ").trim();
   }
 
-  function detectPhrases(text, mapping) {
-    return Object.keys(mapping).filter((phrase) => text.includes(phrase));
+  function resolveNeedsSponsorship(profile) {
+    return profile.needsFutureSponsorship || profile.needsSponsorship || "Unsure";
   }
 
-  function resolveNeedsSponsorship(studentProfile) {
-    return (
-      studentProfile.needsFutureSponsorship ||
-      studentProfile.needsSponsorship ||
-      "Unsure"
-    );
+  function matchSignals(text) {
+    const matched = [];
+    const matchedTags = new Set();
+    SIGNALS.forEach((signal) => {
+      if (signal.requiresNoTag && matchedTags.has(signal.requiresNoTag)) return;
+      if (!signal.patterns.some((pattern) => pattern.test(text))) return;
+      matched.push(signal);
+      if (signal.blockTag) matchedTags.add(signal.blockTag);
+    });
+    return matched;
+  }
+
+  function hasSignal(matched, id) {
+    return matched.some((s) => s.id === id);
+  }
+
+  function collectContradictions(matched) {
+    const contradictions = [];
+    const positiveSponsor = hasSignal(matched, "visa_sponsorship_available") || hasSignal(matched, "sponsorship_available");
+    const negativeSponsor = hasSignal(matched, "no_visa_sponsorship") || hasSignal(matched, "no_sponsorship_available") || hasSignal(matched, "no_future_sponsorship");
+    const optCpt = hasSignal(matched, "opt_candidates_welcome") || hasSignal(matched, "cpt_eligible") || hasSignal(matched, "cpt_candidates_welcome");
+    const intl = hasSignal(matched, "international_students_encouraged");
+    const citizens = hasSignal(matched, "us_citizens_only") || hasSignal(matched, "us_citizenship_required");
+    const permanent = hasSignal(matched, "permanently_authorized") || hasSignal(matched, "green_card_or_citizen");
+    const stemOrVerify = hasSignal(matched, "stem_opt") || hasSignal(matched, "e_verify");
+
+    if (positiveSponsor && negativeSponsor) contradictions.push("The posting includes both positive and restrictive sponsorship language.");
+    if (optCpt && negativeSponsor) contradictions.push("OPT/CPT-friendly wording appears alongside restrictive sponsorship language.");
+    if (positiveSponsor && hasSignal(matched, "no_future_sponsorship")) contradictions.push("Sponsorship appears available while future sponsorship is restricted.");
+    if (intl && citizens) contradictions.push("The posting encourages international students but also includes U.S. citizenship restrictions.");
+    if (positiveSponsor && permanent) contradictions.push("Positive sponsorship wording appears with permanent authorization restrictions.");
+    if (hasSignal(matched, "visa_sponsorship_available") && hasSignal(matched, "no_visa_sponsorship")) contradictions.push("The text contains both 'visa sponsorship available' and 'no visa sponsorship'.");
+    if (stemOrVerify && permanent) contradictions.push("STEM OPT/E-Verify language appears alongside permanent authorization restrictions.");
+    return contradictions;
   }
 
   function determineFit(score) {
@@ -108,153 +115,109 @@
     return { fit: "risky", label: "Risky Fit" };
   }
 
-  function analyzeContradictions(text, hasPositiveSponsorship, hasNegativeSponsorship, mentionsNoSponsorship) {
-    const contradictions = [];
+  function determineEvidenceLevel(matched, contradictions, textLength) {
+    const hardCount = matched.filter((s) => s.severity === "hard_negative").length;
+    const posCount = matched.filter((s) => s.severity === "positive").length;
+    if (textLength < 120 || matched.length < 2) return "limited";
+    if (contradictions.length > 0 || (hardCount > 0 && posCount > 0)) return "mixed";
+    return "strong";
+  }
 
-    if (hasPositiveSponsorship && hasNegativeSponsorship) {
-      contradictions.push("The posting includes both positive and restrictive sponsorship language.");
-    }
-
-    if ((text.includes("opt candidates welcome") || text.includes("cpt")) && mentionsNoSponsorship) {
-      contradictions.push("OPT/CPT-friendly wording appears alongside no-sponsorship language.");
-    }
-
-    if (text.includes("sponsorship available") && text.includes("must not require sponsorship now or in the future")) {
-      contradictions.push("Sponsorship is marked available, but future sponsorship is explicitly disallowed.");
-    }
-
-    if (text.includes("international students encouraged") && (text.includes("u.s. citizens only") || text.includes("us citizens only"))) {
-      contradictions.push("International students are encouraged but the posting also says U.S. citizens only.");
-    }
-
-    if (text.includes("sponsorship available") && (text.includes("permanent work authorization") || text.includes("must be permanently authorized to work"))) {
-      contradictions.push("Sponsorship appears available, yet permanent authorization restrictions are also listed.");
-    }
-
-    if (text.includes("visa sponsorship available") && text.includes("no visa sponsorship")) {
-      contradictions.push("The text contains both 'visa sponsorship available' and 'no visa sponsorship'.");
-    }
-
-    return contradictions;
+  function determineConfidence(textLength, contradictions, extractionQuality, evidenceLevel) {
+    if (textLength < 120 || extractionQuality === "limited" || extractionQuality === "failed") return "low";
+    if (contradictions.length > 0) return "low";
+    if (evidenceLevel === "strong") return "high";
+    return "medium";
   }
 
   function analyzeJobText(pageText, studentProfile = {}) {
-    const normalizedText = normalize(pageText);
+    const text = normalize(pageText);
     let score = 70;
-    const detectedSet = new Set();
     const reasons = [];
+    const matched = matchSignals(text);
+    matched.forEach((s) => (score += s.score));
 
-    if (normalizedText.length < 40) {
-      reasons.push("Very limited visible job text was available. Analyze again on a full posting page or use Demo Mode.");
-      score -= 20;
-    }
-
-    const hardNeg = detectPhrases(normalizedText, PHRASE_GROUPS.hardNegative);
-    const ambiguous = detectPhrases(normalizedText, PHRASE_GROUPS.ambiguous);
-    const positive = detectPhrases(normalizedText, PHRASE_GROUPS.positive);
-
-    hardNeg.forEach((phrase) => {
-      score += PHRASE_GROUPS.hardNegative[phrase];
-      detectedSet.add(phrase);
-    });
-
-    ambiguous.forEach((phrase) => {
-      score += PHRASE_GROUPS.ambiguous[phrase];
-      detectedSet.add(phrase);
-    });
-
-    positive.forEach((phrase) => {
-      score += PHRASE_GROUPS.positive[phrase];
-      detectedSet.add(phrase);
-    });
-
-    const mentionsNoSponsorship = hardNeg.some((p) => NO_SPONSORSHIP_PHRASES.includes(p));
-    const hasPositiveSponsorship = positive.some((p) => POSITIVE_SPONSORSHIP_PHRASES.includes(p));
-    const hasNegativeSponsorship = hardNeg.some(
-      (p) => NO_SPONSORSHIP_PHRASES.includes(p) || ["must be permanently authorized to work", "permanent work authorization", "u.s. citizens only", "us citizens only"].includes(p)
-    );
-
-    if (studentProfile.workPath === "STEM OPT eligible" && (normalizedText.includes("e-verify") || normalizedText.includes("stem opt"))) {
+    if (studentProfile.workPath === "STEM OPT eligible" && (hasSignal(matched, "e_verify") || hasSignal(matched, "stem_opt"))) {
       score += 15;
       reasons.push("Your STEM OPT path aligns with E-Verify/STEM OPT language in this posting.");
     }
-
-    if (studentProfile.workPath === "CPT seeking" && (normalizedText.includes("internship") || normalizedText.includes("cpt"))) {
+    if (studentProfile.workPath === "CPT seeking" && (hasSignal(matched, "internship") || hasSignal(matched, "cpt_eligible") || hasSignal(matched, "cpt_candidates_welcome"))) {
       score += 15;
-      reasons.push("Your CPT-seeking profile matches internship/CPT language here.");
+      reasons.push("Your CPT-seeking profile aligns with internship/CPT-related language.");
     }
 
-    const needsSponsorship = resolveNeedsSponsorship(studentProfile);
-
-    if (needsSponsorship === "Yes" && mentionsNoSponsorship) {
+    const needs = resolveNeedsSponsorship(studentProfile);
+    const noSponsorship = hasSignal(matched, "no_visa_sponsorship") || hasSignal(matched, "no_sponsorship_available") || hasSignal(matched, "no_future_sponsorship");
+    if (needs === "Yes" && noSponsorship) {
       score -= 20;
-      reasons.push("You indicated future sponsorship needs, but this posting includes restrictive sponsorship language.");
+      reasons.push("You indicated future sponsorship needs, and restrictive sponsorship language was detected.");
     }
-
-    if (needsSponsorship === "Unsure" && ambiguous.length > 0) {
+    if (needs === "Unsure" && matched.some((s) => s.severity === "ambiguous")) {
       score -= 5;
       reasons.push("Ambiguous sponsorship language is riskier when future sponsorship needs are uncertain.");
     }
 
-    if (studentProfile.lookingFor === "Internship" && normalizedText.includes("internship")) {
-      score += 10;
-      reasons.push("This posting explicitly mentions an internship path.");
+    if (studentProfile.lookingFor === "Internship" && hasSignal(matched, "internship")) score += 10;
+    if (studentProfile.lookingFor === "Full-time" && (text.includes("full-time") || hasSignal(matched, "entry_level") || hasSignal(matched, "new_grad") || hasSignal(matched, "early_career"))) score += 5;
+
+    if (text.length < 50) {
+      score -= 20;
+      reasons.push("Very limited visible job text was detected. Open a full posting or use Demo Mode.");
     }
 
-    if (studentProfile.lookingFor === "Full-time" && (normalizedText.includes("full-time") || normalizedText.includes("entry level"))) {
-      score += 5;
-      reasons.push("The role includes full-time or entry-level language that matches your target.");
-    }
+    const contradictions = collectContradictions(matched);
 
-    const contradictions = analyzeContradictions(normalizedText, hasPositiveSponsorship, hasNegativeSponsorship, mentionsNoSponsorship);
+    const citizenOrClearance = hasSignal(matched, "us_citizens_only") || hasSignal(matched, "us_citizenship_required") || hasSignal(matched, "security_clearance_required") || hasSignal(matched, "eligible_for_security_clearance");
+    if (citizenOrClearance) {
+      score = Math.min(score, 44);
+      reasons.push("Citizenship or security-clearance restrictions can strongly limit eligibility for many international students.");
+    }
 
     score = Math.max(0, Math.min(100, score));
-
     let { fit, label } = determineFit(score);
-
-    if (contradictions.length > 0) {
-      reasons.push("The posting contains conflicting work-authorization signals. Confirm with the recruiter before applying.");
-      if (fit === "strong" && score < 92) {
-        fit = "risky";
-        label = "Risky Fit";
-      }
+    if (contradictions.length > 0 && fit === "strong") {
+      fit = "risky";
+      label = "Risky Fit";
     }
 
-    if (hardNeg.length > 0) {
-      reasons.push("The posting includes restrictive language that can block or delay international candidate consideration.");
-    }
+    if (contradictions.length > 0) reasons.push("The posting contains conflicting work-authorization signals. Confirm with the recruiter before applying.");
+    if (matched.some((s) => s.severity === "hard_negative")) reasons.push("Restrictive language was detected that may reduce alignment with your current work-authorization path.");
+    if (matched.some((s) => s.severity === "positive")) reasons.push("Supportive language was also detected; recruiter clarification can reduce uncertainty.");
+    if (reasons.length === 0) reasons.push("No strong sponsorship signal was detected. Clarifying expectations early can save time.");
 
-    if (positive.length > 0) {
-      reasons.push("The posting includes language that may be supportive for international candidates.");
-    }
+    const evidence_level = determineEvidenceLevel(matched, contradictions, text.length);
+    const confidence = determineConfidence(text.length, contradictions, studentProfile.__extractionQuality, evidence_level);
 
-    if (reasons.length === 0) {
-      reasons.push("No explicit sponsorship signals were detected; clarify eligibility early before investing significant application time.");
-    }
+    const signal_summary = {
+      hardNegativeCount: matched.filter((s) => s.severity === "hard_negative").length,
+      ambiguousCount: matched.filter((s) => s.severity === "ambiguous").length,
+      positiveCount: matched.filter((s) => s.severity === "positive").length,
+      contradictionCount: contradictions.length
+    };
 
+    const top_evidence = matched.slice(0, 5).map((s) => `${s.severity}: ${s.label}`);
     const timeSavedMinutes = fit === "low" ? 40 : fit === "risky" ? 25 : 0;
+    const variants = MESSAGE_VARIANTS[fit];
 
     return {
       fit,
       label,
       score,
-      detected_phrases: Array.from(detectedSet),
+      detected_phrases: matched.map((s) => s.label),
       contradictions,
       reasons,
       recommended_action: RECOMMENDED_ACTIONS[fit],
-      recruiter_message: RECRUITER_MESSAGES[fit],
+      recruiter_message: variants.polite,
+      recruiter_message_variants: variants,
       time_saved_minutes: timeSavedMinutes,
       disclaimer: DISCLAIMER_FULL,
-      short_disclaimer: DISCLAIMER_SHORT
+      short_disclaimer: DISCLAIMER_SHORT,
+      confidence,
+      evidence_level,
+      signal_summary,
+      top_evidence
     };
   }
 
-  return {
-    analyzeJobText,
-    PHRASE_GROUPS,
-    RECOMMENDED_ACTIONS,
-    RECRUITER_MESSAGES,
-    DISCLAIMER_FULL,
-    DISCLAIMER_SHORT
-  };
+  return { analyzeJobText, SIGNALS, RECOMMENDED_ACTIONS, MESSAGE_VARIANTS, DISCLAIMER_FULL, DISCLAIMER_SHORT };
 });

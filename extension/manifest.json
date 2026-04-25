@@ -4,6 +4,9 @@
   "description": "Apply smarter as an international student.",
   "version": "0.1.0",
   "permissions": ["activeTab", "scripting", "storage"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none';"
+  },
   "action": {
     "default_title": "SponsorLens",
     "default_popup": "popup.html"

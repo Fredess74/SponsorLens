@@ -1,53 +1,32 @@
-# SponsorLens Challenge Submission Package
+# SponsorLens Challenge Submission Package (Advanced MVP)
 
-## Short Project Description
-SponsorLens is a privacy-first Chrome extension that helps international students evaluate job postings for work-authorization friction before investing application time.
+## Short description
+SponsorLens is a local-first Chrome extension that helps international students evaluate job postings for work-authorization friction before spending time on long applications.
 
-## Long Project Description
-SponsorLens is a local-first Manifest V3 extension that reads visible job posting language, detects sponsorship and authorization signals, flags contradictions, and returns a profile-aware Strong Fit / Risky Fit / Low Fit decision. It includes recruiter-safe next-step messaging and a demo mode for reliable pitch scenarios.
+## Advanced framing
+Beyond basic phrase scanning, SponsorLens now includes:
+- confidence/evidence modeling
+- contradiction-aware guidance
+- recruiter message studio variants
+- local saved-job tracker with time-saved rollup
 
-## Problem Statement
-International students frequently encounter unclear or conflicting work-authorization language in job postings, leading to wasted effort and uncertainty.
+## Why useful
+- Reduces blind applications
+- Surfaces hidden restrictions/contradictions
+- Converts unclear posting language into actionable next steps
 
-## Solution Statement
-SponsorLens adds a decision-support layer on top of job board data by interpreting posting text directly and providing actionable guidance.
+## Creativity
+Combines local extraction, rule-based interpretation, contradiction detection, and workflow tools (message studio + saved tracker) without requiring backend/API for MVP use.
 
-## Why This Is Useful
-- Saves application time
-- Improves screening clarity
-- Surfaces contradictions early
-- Produces safe recruiter outreach language
+## Demo highlights
+1. Analyze real posting
+2. Show confidence/evidence/top evidence
+3. Show message studio variants and copy
+4. Save analysis and show saved-job summary
+5. Run demo scenarios for deterministic pitch flow
 
-## Why This Is Creative
-It bridges static job board metadata and personalized decision-support without requiring backend infrastructure in MVP.
-
-## How Codex Helped
-Codex accelerated implementation of extension architecture, scoring logic, testing harness, and product documentation package.
-
-## How to Demo
-1. Open popup on a real job page.
-2. Run Analyze flow.
-3. Show result sections and recruiter-safe message copy.
-4. Run Strong/Risky/Low demo buttons.
-5. Show contradiction demo and explain warning behavior.
-
-## Privacy Statement
-Local-first MVP; no resumes, immigration documents, or IDs collected; no external API calls.
+## Privacy statement
+Local-first default, no resumes or immigration document collection, no persistent full page text storage.
 
 ## Disclaimer
-SponsorLens is a non-commercial educational prototype. It does not provide legal, immigration, or employment advice and does not guarantee sponsorship, eligibility, or hiring outcomes.
-
-## Suggested Screenshots / Video Moments
-- Popup profile + analyze button
-- Strong Fit result card
-- Risky Fit with clarification action
-- Low Fit with time-saved estimate
-- Contradiction warning example
-- Demo mode buttons in action
-
-## Judging Criteria Mapping
-- **Clarity:** clear fit labels, reasons, and recommendations
-- **Usefulness:** time-saving triage for real student workflow
-- **Creativity:** contradiction-aware interpretation layer
-- **Execution:** working MV3 extension + tests + docs
-- **Polish & Thoughtfulness:** startup-style UI, privacy-first framing, explicit guardrails
+Educational decision-support only. Not legal/immigration/employment advice.
