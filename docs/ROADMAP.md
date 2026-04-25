@@ -1,22 +1,35 @@
-# SponsorLens Pro Prototype Roadmap
+# Roadmap
 
-## Stage 1 — Current Advanced MVP
-- Local-first extension
-- Rule-based analyzer with confidence/evidence
-- Saved Job Tracker
-- Recruiter Message Studio
-- Demo mode + tests + CI
+## Stage 1 — MVP ✅ (Current)
+
+- Local-first Manifest V3 Chrome extension
+- Rule-based signal analyzer with 25+ patterns
+- Confidence and evidence level reporting
+- Contradiction detection
+- Recruiter Message Studio (3 variants)
+- Saved Job Tracker with export
+- Demo mode for presentations
+- 15 automated tests + GitHub Actions CI
+- CSP hardening and security policy
 
 ## Stage 2 — Pro Prototype
-- Optional backend explanation mode
-- Better board-specific parsing quality
-- Rich saved-job filtering and trend view
+
+- Board-specific parsing adapters (LinkedIn, Indeed, Handshake, Greenhouse)
+- Improved extraction quality with site-specific selectors
+- Rich saved-job filtering, sorting, and search
+- Trend visualization (time saved over weeks)
+- Browser action badge showing fit verdict color
 
 ## Stage 3 — Intelligence Layer
-- Public employer sponsorship signal knowledge base
-- Company normalization and contradiction history
-- Weekly time-saved dashboard
+
+- Employer sponsorship signal knowledge base (crowdsourced)
+- Company name normalization and historical contradiction tracking
+- Pattern learning from aggregated anonymous signals
+- Weekly application intelligence dashboard
 
 ## Stage 4 — Ecosystem
-- Career center analytics with anonymous aggregation
-- Gmail/Docs helper workflows for outreach drafts
+
+- University career center analytics integration (anonymous, aggregated)
+- Gmail/Docs helper for outreach draft generation
+- Slack/Teams integration for career advisor workflows
+- Mobile companion for on-the-go reviews

@@ -1,32 +1,48 @@
-# SponsorLens Challenge Submission Package (Advanced MVP)
+# Challenge Submission
 
-## Short description
-SponsorLens is a local-first Chrome extension that helps international students evaluate job postings for work-authorization friction before spending time on long applications.
+## Project
 
-## Advanced framing
-Beyond basic phrase scanning, SponsorLens now includes:
-- confidence/evidence modeling
-- contradiction-aware guidance
-- recruiter message studio variants
-- local saved-job tracker with time-saved rollup
+**SponsorLens** — AI-powered job-fit copilot for international students
 
-## Why useful
-- Reduces blind applications
-- Surfaces hidden restrictions/contradictions
-- Converts unclear posting language into actionable next steps
+## Problem
 
-## Creativity
-Combines local extraction, rule-based interpretation, contradiction detection, and workflow tools (message studio + saved tracker) without requiring backend/API for MVP use.
+International students on F-1 visas spend significant time applying to jobs with unclear, contradictory, or restrictive work-authorization language. Current job boards surface employer-reported fields without interpretation — leading to blind applications, wasted hours, and preventable rejections.
 
-## Demo highlights
-1. Analyze real posting
-2. Show confidence/evidence/top evidence
-3. Show message studio variants and copy
-4. Save analysis and show saved-job summary
-5. Run demo scenarios for deterministic pitch flow
+## Solution
 
-## Privacy statement
-Local-first default, no resumes or immigration document collection, no persistent full page text storage.
+A privacy-first Chrome extension that reads visible job posting text, detects 25+ work-authorization signals, flags contradictions, and returns an actionable Strong Fit / Risky Fit / Low Fit verdict — all without external API calls.
+
+## What Makes It Different
+
+- **Contradiction-aware**: Detects when postings say both "sponsorship available" and "no visa sponsorship" simultaneously
+- **Profile-aware**: Adjusts scoring based on student's visa status, work path, and sponsorship needs
+- **Transparent**: Exposes confidence level, evidence strength, and every matched signal
+- **Actionable**: Provides recruiter message templates ready to copy, not just a score
+- **Privacy-first**: Zero data leaves the browser. No resumes, no documents, no tracking
+
+## Demo Highlights
+
+1. Analyze a real job posting → see structured verdict with confidence and evidence
+2. View contradictions and top evidence signals
+3. Switch between recruiter message variants (short / polite / cover letter)
+4. Save the analysis → view cumulative Strong/Risky/Low counts and time saved
+5. Run built-in demo scenarios for a clean, deterministic walkthrough
+
+## Technical Stack
+
+- Chrome Manifest V3 extension
+- Vanilla JavaScript (no frameworks, no build step)
+- `chrome.storage.local` for profile and saved analyses
+- 15 automated tests (9 analyzer + 6 security)
+- GitHub Actions CI pipeline
+
+## Privacy Commitment
+
+- No external API calls in default mode
+- No resumes or immigration documents collected
+- No full page text stored
+- Minimal permissions: `activeTab`, `scripting`, `storage`
 
 ## Disclaimer
-Educational decision-support only. Not legal/immigration/employment advice.
+
+SponsorLens is a non-commercial educational prototype. It does not provide legal, immigration, or employment advice.

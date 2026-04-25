@@ -1,25 +1,47 @@
-# SponsorLens Privacy & Compliance (MVP)
+# Privacy & Compliance
 
-## Local-first default
-SponsorLens processes job content locally in the extension by default.
+## Design Principle
 
-## Data boundaries
-- No resumes collected
-- No immigration documents collected
-- No government IDs collected
-- No personal identifiers intentionally collected
-- No external API calls in default mode
+SponsorLens is built **local-first by default**. All job text analysis runs entirely within the browser extension — no data is transmitted externally.
 
-## What is stored locally
-- Optional student profile (`chrome.storage.local`)
-- Optional saved analysis summaries (title/company/url/fit/score/reasons metadata)
-- **Not stored:** full extracted page text
+## What SponsorLens Does NOT Collect
 
-## Advice boundary
-- Not legal advice
-- Not immigration advice
-- Not employment advice
-- No guarantee of sponsorship, eligibility, or hiring outcomes
+| Category | Status |
+|----------|--------|
+| Resumes | ❌ Never collected |
+| Immigration documents | ❌ Never collected |
+| Government IDs | ❌ Never collected |
+| Personal identifiers | ❌ Not intentionally collected |
+| Full page text | ❌ Not persisted to storage |
+| Browsing history | ❌ Not tracked |
 
-## Prototype status
-Non-commercial educational prototype for the OpenAI Codex Creator Challenge.
+## What IS Stored Locally (Optional)
+
+| Data | Storage | Purpose |
+|------|---------|---------|
+| Student profile preferences | `chrome.storage.local` | Profile-aware scoring (visa status, work path) |
+| Saved analysis summaries | `chrome.storage.local` | Job tracker (title, company, URL, fit, score only) |
+
+All locally stored data can be cleared by the user at any time.
+
+## Extension Permissions
+
+| Permission | Purpose |
+|-----------|---------|
+| `activeTab` | Read visible text of the currently active tab when user clicks Analyze |
+| `scripting` | Inject the local text extraction script into the active page |
+| `storage` | Persist optional student profile and saved analysis summaries |
+
+No `host_permissions`, `tabs`, or network-related permissions are requested.
+
+## Content Security Policy
+
+```json
+"content_security_policy": {
+  "extension_pages": "script-src 'self'; object-src 'none';"
+}
+```
+
+## Advice Boundary
+
+SponsorLens is a **decision-support tool** that interprets visible job posting language. It does not provide legal, immigration, or employment advice and does not guarantee visa sponsorship, job eligibility, or hiring outcomes.
