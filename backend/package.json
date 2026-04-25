@@ -1,0 +1,9 @@
+{
+  "name": "sponsorlens-optional-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Optional backend skeleton for SponsorLens explain mode.",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
