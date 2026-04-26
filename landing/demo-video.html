@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SponsorLens — Product Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c1117;--bg-card:#161b22;--surface:#1c2128;
+  --accent:#059669;--accent-soft:#d1fae5;
+  --strong:#059669;--risky:#d97706;--low:#dc2626;
+  --text:#e5e7eb;--text-dim:#9ca3af;--text-bright:#f9fafb;
+  --radius:14px;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text)}
+
+/* ===== SCENE SYSTEM ===== */
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;pointer-events:none;padding:40px 80px}
+
+/* Scene timing: each scene fades in, holds, fades out */
+/* Total: ~80s */
+.scene-1{animation:scenePlay 8s ease 0s forwards}
+.scene-2{animation:scenePlay 8s ease 7s forwards}
+.scene-3{animation:scenePlay 10s ease 14s forwards}
+.scene-4{animation:scenePlay 14s ease 23s forwards}
+.scene-5{animation:scenePlay 10s ease 36s forwards}
+.scene-6{animation:scenePlay 9s ease 45s forwards}
+.scene-7{animation:scenePlay 8s ease 53s forwards}
+.scene-8{animation:sceneHold 12s ease 60s forwards}
+
+@keyframes scenePlay{
+  0%{opacity:0;transform:scale(0.97);visibility:hidden}
+  11%{opacity:0;visibility:visible}
+  12%{opacity:1;transform:scale(1)}
+  85%{opacity:1;transform:scale(1)}
+  99%{opacity:0;transform:scale(1.01)}
+  100%{opacity:0;visibility:hidden}
+}
+@keyframes sceneHold{
+  0%{opacity:0;transform:scale(0.97);visibility:hidden}
+  14%{opacity:0;visibility:visible}
+  15%{opacity:1;transform:scale(1)}
+  100%{opacity:1;transform:scale(1)}
+}
+
+/* ===== COMMON ===== */
+.badge{display:inline-block;padding:8px 20px;border-radius:999px;font-size:0.8rem;font-weight:700;letter-spacing:0.05em;background:rgba(5,150,105,0.15);color:var(--accent);margin-bottom:28px;text-transform:uppercase}
+h1{font-size:3.6rem;font-weight:900;letter-spacing:-2px;line-height:1.1;text-align:center;color:var(--text-bright)}
+h2{font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;line-height:1.15;text-align:center;color:var(--text-bright);margin-bottom:16px}
+.sub{font-size:1.15rem;color:var(--text-dim);text-align:center;max-width:650px;line-height:1.7;margin-top:16px}
+.gradient{background:linear-gradient(135deg,var(--accent),#0d9488);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.glow{text-shadow:0 0 60px rgba(5,150,105,0.3)}
+
+/* ===== SCENE 1: TITLE ===== */
+.title-logo{font-size:1.4rem;font-weight:800;color:var(--text-bright);letter-spacing:-0.5px;margin-bottom:48px;opacity:0;animation:fadeUp 1s ease 0.5s forwards}
+.title-logo span{color:var(--accent)}
+.scene-1 h1{opacity:0;animation:fadeUp 1.2s ease 1s forwards}
+.scene-1 .sub{opacity:0;animation:fadeUp 1s ease 2s forwards}
+.scene-1 .badge{opacity:0;animation:fadeUp 0.8s ease 0.3s forwards}
+
+/* ===== SCENE 2: PROBLEM ===== */
+.problem-stats{display:flex;gap:48px;margin-top:40px}
+.p-stat{text-align:center;opacity:0}
+.p-stat:nth-child(1){animation:fadeUp 0.6s ease 8.5s forwards}
+.p-stat:nth-child(2){animation:fadeUp 0.6s ease 9s forwards}
+.p-stat:nth-child(3){animation:fadeUp 0.6s ease 9.5s forwards}
+.p-stat .num{font-size:3rem;font-weight:900;color:var(--accent);letter-spacing:-1px}
+.p-stat .label{font-size:0.85rem;color:var(--text-dim);margin-top:6px}
+
+/* ===== SCENE 3: HOW IT WORKS ===== */
+.steps{display:flex;align-items:center;gap:0;margin-top:48px}
+.hw-step{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 32px;opacity:0}
+.hw-step:nth-child(1){animation:fadeUp 0.5s ease 15.5s forwards}
+.hw-step:nth-child(3){animation:fadeUp 0.5s ease 16.5s forwards}
+.hw-step:nth-child(5){animation:fadeUp 0.5s ease 17.5s forwards}
+.hw-step:nth-child(7){animation:fadeUp 0.5s ease 18.5s forwards}
+.step-circle{width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem}
+.hw-step p{font-size:0.9rem;color:var(--text-dim);text-align:center;font-weight:500}
+.step-arrow{font-size:1.5rem;color:rgba(5,150,105,0.4);opacity:0}
+.step-arrow:nth-child(2){animation:fadeUp 0.4s ease 16s forwards}
+.step-arrow:nth-child(4){animation:fadeUp 0.4s ease 17s forwards}
+.step-arrow:nth-child(6){animation:fadeUp 0.4s ease 18s forwards}
+
+/* ===== SCENE 4: VERDICTS ===== */
+.verdicts{display:flex;gap:24px;margin-top:40px}
+.v-card{background:var(--bg-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);width:300px;overflow:hidden;opacity:0;transform:translateY(30px)}
+.v-card:nth-child(1){animation:cardIn 0.8s ease 25s forwards}
+.v-card:nth-child(2){animation:cardIn 0.8s ease 27s forwards}
+.v-card:nth-child(3){animation:cardIn 0.8s ease 29s forwards}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.v-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+.v-top.strong{border-bottom:3px solid var(--strong)}
+.v-top.risky{border-bottom:3px solid var(--risky)}
+.v-top.low{border-bottom:3px solid var(--low)}
+.v-badge{padding:4px 12px;border-radius:6px;font-size:0.75rem;font-weight:700}
+.v-badge.sb{background:rgba(5,150,105,0.15);color:#34d399}
+.v-badge.rb{background:rgba(217,119,6,0.15);color:#fbbf24}
+.v-badge.lb{background:rgba(220,38,38,0.15);color:#f87171}
+.v-score{font-weight:800;font-size:0.9rem;color:var(--text-bright)}
+.v-card h3{padding:14px 20px 10px;font-size:0.95rem;font-weight:700;color:var(--text-bright)}
+.v-pills{display:flex;flex-wrap:wrap;gap:6px;padding:0 20px 12px}
+.v-pill{font-size:0.7rem;padding:3px 8px;border-radius:4px;font-weight:600}
+.v-pill.pos{background:rgba(5,150,105,0.12);color:#34d399}
+.v-pill.neu{background:rgba(255,255,255,0.06);color:var(--text-dim)}
+.v-pill.warn{background:rgba(217,119,6,0.12);color:#fbbf24}
+.v-pill.neg{background:rgba(220,38,38,0.12);color:#f87171}
+.v-rec{font-size:0.8rem;font-weight:600;padding:12px 20px;border-top:1px solid rgba(255,255,255,0.06)}
+.v-rec.sg{color:var(--strong)}.v-rec.rg{color:var(--risky)}.v-rec.lg{color:var(--low)}
+
+/* ===== SCENE 5: MESSAGE STUDIO ===== */
+.studio-box{background:var(--bg-card);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:36px;max-width:700px;width:100%;margin-top:32px;opacity:0;animation:fadeUp 0.8s ease 37.5s forwards}
+.studio-box h3{font-size:1.2rem;font-weight:700;color:var(--text-bright);margin-bottom:6px}
+.studio-box .desc{font-size:0.88rem;color:var(--text-dim);margin-bottom:20px}
+.studio-msg{background:rgba(5,150,105,0.06);border-left:3px solid var(--accent);border-radius:8px;padding:20px;font-style:italic;font-size:0.92rem;color:var(--text);line-height:1.7;margin-bottom:16px}
+.studio-tabs{display:flex;gap:8px}
+.studio-tab{padding:8px 16px;border-radius:6px;font-size:0.78rem;font-weight:600;border:1px solid rgba(255,255,255,0.1);color:var(--text-dim)}
+.studio-tab.active{background:var(--text-bright);color:var(--bg);border-color:var(--text-bright)}
+
+/* ===== SCENE 6: TRUST ===== */
+.trust-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:36px;max-width:800px}
+.t-card{display:flex;gap:14px;padding:20px;background:var(--bg-card);border:1px solid rgba(255,255,255,0.06);border-radius:12px;opacity:0}
+.t-card:nth-child(1){animation:fadeUp 0.5s ease 46.5s forwards}
+.t-card:nth-child(2){animation:fadeUp 0.5s ease 47s forwards}
+.t-card:nth-child(3){animation:fadeUp 0.5s ease 47.5s forwards}
+.t-card:nth-child(4){animation:fadeUp 0.5s ease 48s forwards}
+.t-icon{width:40px;height:40px;border-radius:10px;background:rgba(5,150,105,0.1);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.t-card h4{font-size:0.88rem;font-weight:700;color:var(--text-bright);margin-bottom:4px}
+.t-card p{font-size:0.78rem;color:var(--text-dim);line-height:1.5}
+
+/* ===== SCENE 7: TECH ===== */
+.tech-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:36px;max-width:700px}
+.tech-pill{padding:10px 20px;background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:999px;font-size:0.85rem;font-weight:600;color:var(--text);opacity:0}
+.tech-pill:nth-child(1){animation:fadeUp 0.3s ease 54.5s forwards}
+.tech-pill:nth-child(2){animation:fadeUp 0.3s ease 54.8s forwards}
+.tech-pill:nth-child(3){animation:fadeUp 0.3s ease 55.1s forwards}
+.tech-pill:nth-child(4){animation:fadeUp 0.3s ease 55.4s forwards}
+.tech-pill:nth-child(5){animation:fadeUp 0.3s ease 55.7s forwards}
+.tech-pill:nth-child(6){animation:fadeUp 0.3s ease 56s forwards}
+.tech-pill:nth-child(7){animation:fadeUp 0.3s ease 56.3s forwards}
+.tech-pill:nth-child(8){animation:fadeUp 0.3s ease 56.6s forwards}
+
+/* ===== SCENE 8: CTA ===== */
+.scene-8 h1{opacity:0;animation:fadeUp 1s ease 61.5s forwards}
+.scene-8 .sub{opacity:0;animation:fadeUp 1s ease 62.5s forwards}
+.cta-buttons{display:flex;gap:16px;margin-top:36px;opacity:0;animation:fadeUp 0.8s ease 63.5s forwards}
+.cta-btn{padding:14px 32px;border-radius:12px;font-size:0.95rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:10px}
+.cta-primary{background:var(--accent);color:#fff}
+.cta-ghost{border:1px solid rgba(255,255,255,0.15);color:var(--text-dim)}
+.credits{margin-top:48px;font-size:0.75rem;color:rgba(255,255,255,0.25);opacity:0;animation:fadeUp 0.8s ease 65s forwards}
+
+/* ===== UTILITIES ===== */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Background glow effect */
+.bg-glow{position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(ellipse 600px 400px at 30% 40%,rgba(5,150,105,0.08),transparent),
+             radial-gradient(ellipse 500px 350px at 70% 60%,rgba(99,102,241,0.04),transparent)}
+
+/* Progress bar */
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),#0d9488);z-index:999;animation:progressBar 72s linear 0s forwards}
+@keyframes progressBar{from{width:0}to{width:100%}}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="progress"></div>
+
+<!-- SCENE 1: Title Card -->
+<div class="scene scene-1">
+  <div class="badge">OpenAI × Handshake Creator Challenge</div>
+  <div class="title-logo">Sponsor<span>Lens</span></div>
+  <h1>Stop applying to jobs you<br/><span class="gradient">can't legally start.</span></h1>
+  <p class="sub">A local-first Chrome extension that reads job postings and tells international students whether to apply, clarify, or skip.</p>
+</div>
+
+<!-- SCENE 2: Problem -->
+<div class="scene scene-2">
+  <h2 class="glow">The Problem</h2>
+  <p class="sub">International students lose hours to jobs they were never eligible for. Job boards let employers self-report sponsorship — those fields are often wrong.</p>
+  <div class="problem-stats">
+    <div class="p-stat"><div class="num">1.1M</div><div class="label">International students in the US</div></div>
+    <div class="p-stat"><div class="num">40 min</div><div class="label">Wasted per wrong application</div></div>
+    <div class="p-stat"><div class="num">70%</div><div class="label">Report unclear sponsorship info</div></div>
+  </div>
+</div>
+
+<!-- SCENE 3: How It Works -->
+<div class="scene scene-3">
+  <h2 class="glow">How It Works</h2>
+  <p class="sub">One click. Clear decision. No data leaves your browser.</p>
+  <div class="steps">
+    <div class="hw-step"><div class="step-circle">1</div><p>Open any<br/>job posting</p></div>
+    <div class="step-arrow">→</div>
+    <div class="hw-step"><div class="step-circle">2</div><p>Click<br/>SponsorLens</p></div>
+    <div class="step-arrow">→</div>
+    <div class="hw-step"><div class="step-circle">3</div><p>Get your<br/>verdict</p></div>
+    <div class="step-arrow">→</div>
+    <div class="hw-step"><div class="step-circle">4</div><p>Apply, clarify<br/>or skip</p></div>
+  </div>
+</div>
+
+<!-- SCENE 4: Three Verdicts -->
+<div class="scene scene-4">
+  <h2 class="glow">Three Verdicts. One Clear System.</h2>
+  <div class="verdicts">
+    <div class="v-card">
+      <div class="v-top strong"><span class="v-badge sb">Strong Fit</span><span class="v-score">95/100</span></div>
+      <h3>Marketing Analytics Intern</h3>
+      <div class="v-pills">
+        <span class="v-pill pos">OPT candidates welcome</span>
+        <span class="v-pill pos">CPT eligible</span>
+        <span class="v-pill pos">E-Verify employer</span>
+      </div>
+      <div class="v-rec sg">Apply and tailor your application.</div>
+    </div>
+    <div class="v-card">
+      <div class="v-top risky"><span class="v-badge rb">Risky Fit</span><span class="v-score">62/100</span></div>
+      <h3>Business Analyst Intern</h3>
+      <div class="v-pills">
+        <span class="v-pill neu">Must be authorized to work</span>
+        <span class="v-pill warn">Sponsorship unclear</span>
+      </div>
+      <div class="v-rec rg">Ask the recruiter first.</div>
+    </div>
+    <div class="v-card">
+      <div class="v-top low"><span class="v-badge lb">Low Fit</span><span class="v-score">12/100</span></div>
+      <h3>Strategy Analyst</h3>
+      <div class="v-pills">
+        <span class="v-pill neg">U.S. citizens only</span>
+        <span class="v-pill neg">Security clearance</span>
+        <span class="v-pill neg">No visa sponsorship</span>
+      </div>
+      <div class="v-rec lg">Skip. Time saved: 40 minutes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 5: Recruiter Message Studio -->
+<div class="scene scene-5">
+  <h2 class="glow">Recruiter Message Studio</h2>
+  <p class="sub">Three variants. One click to copy. Ask the right question.</p>
+  <div class="studio-box">
+    <h3>Generated Message</h3>
+    <div class="desc">Based on the job analysis and your immigration status</div>
+    <div class="studio-msg">"Could you confirm whether candidates with F-1 OPT/CPT work authorization are considered for this role? I understand this depends on company policy and role requirements."</div>
+    <div class="studio-tabs">
+      <div class="studio-tab active">Short clarification</div>
+      <div class="studio-tab">Polite recruiter message</div>
+      <div class="studio-tab">Cover letter paragraph</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 6: Trust -->
+<div class="scene scene-6">
+  <h2 class="glow">Built for the Most Sensitive Job Search</h2>
+  <p class="sub">International students handle immigration documents and visa timelines. SponsorLens never touches any of it.</p>
+  <div class="trust-cards">
+    <div class="t-card">
+      <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><h4>100% Local Analysis</h4><p>Everything runs in your browser. Nothing sent anywhere.</p></div>
+    </div>
+    <div class="t-card">
+      <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+      <div><h4>Zero Personal Data</h4><p>No resumes, no immigration docs. Ever.</p></div>
+    </div>
+    <div class="t-card">
+      <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+      <div><h4>No External API Calls</h4><p>Content Security Policy enforced. Zero network requests.</p></div>
+    </div>
+    <div class="t-card">
+      <div class="t-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div><h4>15 Automated Tests</h4><p>6 dedicated security checks. Runs on every commit.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENE 7: Tech -->
+<div class="scene scene-7">
+  <h2 class="glow">Under the Hood</h2>
+  <p class="sub">Built with Codex as a fully functional Chrome extension with tests, docs, and privacy guardrails.</p>
+  <div class="tech-grid">
+    <span class="tech-pill">Chrome Manifest V3</span>
+    <span class="tech-pill">25+ Signal Patterns</span>
+    <span class="tech-pill">Contradiction Engine</span>
+    <span class="tech-pill">15 Automated Tests</span>
+    <span class="tech-pill">Content Security Policy</span>
+    <span class="tech-pill">CI/CD Pipeline</span>
+    <span class="tech-pill">Full Documentation</span>
+    <span class="tech-pill">Zero Dependencies</span>
+  </div>
+</div>
+
+<!-- SCENE 8: CTA -->
+<div class="scene scene-8">
+  <h1 class="glow">Stop applying blindly.</h1>
+  <p class="sub">SponsorLens doesn't replace legal advice.<br/>It replaces wasted time with clarity.</p>
+  <div class="cta-buttons">
+    <span class="cta-btn cta-primary">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      View on GitHub
+    </span>
+    <span class="cta-btn cta-ghost">Read Documentation</span>
+  </div>
+  <div class="credits">SponsorLens · Built with Codex · OpenAI × Handshake Creator Challenge · 2026</div>
+</div>
+
+</body>
+</html>
