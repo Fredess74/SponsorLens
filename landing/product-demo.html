@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SponsorLens — Live Product Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0c1117;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+
+.demo-viewport{position:relative;width:1100px;height:680px;border-radius:16px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.5)}
+
+/* ===== BROWSER CHROME ===== */
+.browser-chrome{height:42px;background:#1e1e2e;display:flex;align-items:center;padding:0 16px;gap:8px;border-bottom:1px solid #2a2a3a}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.url-bar{flex:1;margin-left:12px;background:#12121e;border-radius:6px;padding:6px 14px;display:flex;align-items:center;gap:8px}
+.url-bar .lock{color:#28c840;font-size:11px}
+.url-bar .url{color:#9ca3af;font-size:12px;font-family:'Inter',monospace}
+.ext-icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#047857,#059669);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:auto}
+.ext-icon svg{width:16px;height:16px;fill:#fff}
+
+/* ===== JOB PAGE ===== */
+.page-content{display:flex;height:calc(100% - 42px);position:relative}
+.job-sidebar{width:360px;background:#f3f4f6;border-right:1px solid #e5e7eb;padding:20px;overflow-y:auto}
+.job-main{flex:1;background:#fff;padding:28px 32px;overflow-y:auto}
+
+.company-logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;margin-bottom:12px}
+.job-main h1{font-size:1.35rem;color:#111;margin-bottom:4px;font-weight:700}
+.job-main .company{font-size:0.95rem;color:#6b7280;margin-bottom:4px}
+.job-main .location{font-size:0.85rem;color:#9ca3af;margin-bottom:16px}
+.job-main .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tag{padding:4px 10px;border-radius:999px;font-size:0.75rem;font-weight:600;background:#eff6ff;color:#2563eb}
+.tag.green{background:#ecfdf5;color:#059669}
+.section-title{font-size:0.9rem;font-weight:700;color:#111;margin:16px 0 8px;padding-top:12px;border-top:1px solid #f3f4f6}
+.section-title:first-of-type{border-top:none;padding-top:0}
+.job-text{font-size:0.82rem;color:#4b5563;line-height:1.65}
+.job-text li{margin-bottom:6px}
+.highlight{background:rgba(5,150,105,0.12);padding:1px 4px;border-radius:3px;font-weight:600;color:#047857}
+.highlight.warn{background:rgba(217,119,6,0.12);color:#b45309}
+.highlight.neg{background:rgba(185,28,28,0.12);color:#b91c1c}
+
+/* Sidebar job cards */
+.sidebar-job{padding:14px;border-radius:10px;background:#fff;border:1px solid #e5e7eb;margin-bottom:8px;cursor:pointer;transition:all 0.3s}
+.sidebar-job.active{border-color:#059669;box-shadow:0 0 0 2px rgba(5,150,105,0.2)}
+.sidebar-job h4{font-size:0.82rem;font-weight:700;color:#111;margin-bottom:2px}
+.sidebar-job p{font-size:0.72rem;color:#9ca3af}
+
+/* ===== POPUP OVERLAY ===== */
+.popup-overlay{position:absolute;top:42px;right:16px;width:400px;max-height:580px;background:linear-gradient(180deg,#f0fdf4,#ecfdf5);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3),0 0 0 1px rgba(5,150,105,0.1);opacity:0;transform:translateY(-10px) scale(0.96);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;z-index:10;overflow-y:auto;padding:14px}
+.popup-overlay.visible{opacity:1;transform:translateY(8px) scale(1);pointer-events:auto}
+
+/* Popup internals - match real extension */
+.popup-header{background:linear-gradient(145deg,#fff 10%,#f0fdf4 90%);border:1px solid #a7f3d0;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 8px 20px rgba(6,78,59,0.06)}
+.popup-header h2{font-size:1.2rem;color:#064e3b;letter-spacing:0.2px;font-weight:800}
+.popup-header .tag-line{font-size:0.82rem;color:#5b6f67;margin-top:4px}
+.popup-header .privacy{display:inline-block;margin-top:8px;padding:5px 10px;border-radius:999px;font-size:0.7rem;border:1px solid #a7f3d0;background:#d1fae5;color:#064e3b;font-weight:600}
+
+.popup-card{background:#fff;border:1px solid #a7f3d0;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 8px 20px rgba(6,78,59,0.06)}
+
+/* Result card */
+.result-card{transition:border-color 0.3s}
+.result-card.strong{border-left:5px solid #059669}
+.result-card.risky{border-left:5px solid #b45309}
+.result-card.low{border-left:5px solid #b91c1c}
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.result-header h3{font-size:1rem;font-weight:800;color:#064e3b}
+.score-pill{display:inline-flex;align-items:center;justify-content:center;min-width:80px;height:28px;padding:0 10px;border-radius:999px;font-weight:700;font-size:0.82rem}
+.score-pill.strong{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.score-pill.risky{background:#ffedd5;color:#9a3412;border:1px solid #fdba74}
+.score-pill.low{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+
+.meta{font-size:0.75rem;color:#5b6f67;margin-bottom:4px}
+.evidence-title{font-size:0.82rem;font-weight:700;color:#183d32;margin:10px 0 6px}
+.evidence-list{padding-left:16px}
+.evidence-list li{font-size:0.78rem;color:#2f4b43;margin-bottom:5px;line-height:1.4}
+.action-text{font-size:0.82rem;font-weight:700;margin-top:10px;padding:8px 10px;border-radius:8px}
+.action-text.strong{background:#ecfdf5;color:#059669}
+.action-text.risky{background:#fffbeb;color:#b45309}
+.action-text.low{background:#fef2f2;color:#b91c1c}
+
+/* Recruiter message */
+.msg-box{background:#fbfffd;border:1px solid #bbf7d0;border-radius:10px;padding:10px;font-size:0.78rem;color:#10201a;line-height:1.5;min-height:60px;margin-top:8px}
+.variant-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.v-btn{padding:6px 10px;border-radius:8px;border:1px solid #a7f3d0;background:#ecfdf5;color:#065f46;font-size:0.72rem;font-weight:600;cursor:pointer}
+.v-btn.active{background:#059669;color:#fff;border-color:#059669}
+
+/* Analyze button in popup */
+.analyze-btn{width:100%;padding:10px;border:none;border-radius:10px;color:#fff;background:linear-gradient(120deg,#047857,#059669);box-shadow:0 6px 16px rgba(5,150,105,0.28);font-weight:700;font-size:0.85rem;cursor:pointer;margin-bottom:10px}
+
+/* ===== CURSOR ===== */
+.fake-cursor{position:absolute;width:20px;height:20px;z-index:100;pointer-events:none;opacity:0;transition:all 0.8s cubic-bezier(0.25,0.46,0.45,0.94)}
+.fake-cursor.visible{opacity:1}
+.fake-cursor svg{width:20px;height:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))}
+
+/* Click ripple */
+.click-ripple{position:absolute;width:30px;height:30px;border-radius:50%;background:rgba(5,150,105,0.3);transform:scale(0);z-index:99;pointer-events:none}
+.click-ripple.active{animation:ripple 0.6s ease forwards}
+@keyframes ripple{0%{transform:scale(0);opacity:1}100%{transform:scale(3);opacity:0}}
+
+/* Scanning animation */
+.scanning{position:relative}
+.scanning::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#059669,transparent);animation:scan 1.5s ease infinite}
+@keyframes scan{0%{top:0}100%{top:100%}}
+
+/* Progress dots */
+.loading-dots{display:flex;gap:4px;justify-content:center;padding:20px}
+.loading-dots span{width:8px;height:8px;border-radius:50%;background:#059669;animation:dotPulse 1.2s ease infinite}
+.loading-dots span:nth-child(2){animation-delay:0.2s}
+.loading-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dotPulse{0%,80%,100%{opacity:0.3;transform:scale(0.8)}40%{opacity:1;transform:scale(1.2)}}
+
+/* Status bar */
+.status-bar{position:absolute;bottom:0;left:0;right:0;height:28px;background:#1e1e2e;display:flex;align-items:center;padding:0 16px;gap:12px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#28c840}
+.status-text{font-size:11px;color:#9ca3af}
+
+/* Phase indicator */
+.phase-label{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(5,150,105,0.9);color:#fff;padding:8px 20px;border-radius:999px;font-size:0.82rem;font-weight:700;opacity:0;transition:opacity 0.4s;z-index:50;white-space:nowrap}
+.phase-label.visible{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="demo-viewport" id="viewport">
+  <!-- Browser Chrome -->
+  <div class="browser-chrome">
+    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+    <div class="url-bar">
+      <span class="lock">&#128274;</span>
+      <span class="url" id="urlText">linkedin.com/jobs/view/marketing-analytics-intern</span>
+    </div>
+    <div class="ext-icon" id="extIcon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7v6c0 5.55 3.84 10.74 10 12 6.16-1.26 10-6.45 10-12V7L12 2zm-1 14l-4-4 1.41-1.41L11 13.17l5.59-5.59L18 9l-7 7z"/></svg>
+    </div>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <!-- Sidebar -->
+    <div class="job-sidebar">
+      <div class="sidebar-job active" id="job1">
+        <h4>Marketing Analytics Intern</h4>
+        <p>TechVision Inc. · San Francisco, CA</p>
+      </div>
+      <div class="sidebar-job" id="job2">
+        <h4>Business Analyst Intern</h4>
+        <p>DataFlow Corp · Austin, TX</p>
+      </div>
+      <div class="sidebar-job" id="job3">
+        <h4>Strategy Analyst</h4>
+        <p>DefenseTech LLC · Arlington, VA</p>
+      </div>
+      <div class="sidebar-job" id="job4">
+        <h4>Product Manager Intern</h4>
+        <p>CloudBase · Seattle, WA</p>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="job-main" id="jobMain">
+      <div class="company-logo" id="companyLogo">TV</div>
+      <h1 id="jobTitle">Marketing Analytics Intern</h1>
+      <div class="company" id="companyName">TechVision Inc.</div>
+      <div class="location" id="jobLocation">San Francisco, CA · Hybrid · Posted 2 days ago</div>
+      <div class="tags" id="jobTags">
+        <span class="tag green">Internship</span>
+        <span class="tag">Marketing</span>
+        <span class="tag">Analytics</span>
+      </div>
+      <div class="section-title">About the Role</div>
+      <div class="job-text" id="jobDesc">
+        We are looking for a motivated Marketing Analytics Intern to join our growing team. This role is ideal for students who are passionate about data-driven marketing and want hands-on experience with campaign analytics.<br/><br/>
+        <span class="highlight">International students on OPT or CPT are welcome to apply.</span> We are an <span class="highlight">E-Verify employer</span> and support work authorization for qualified candidates.
+      </div>
+      <div class="section-title">Requirements</div>
+      <div class="job-text">
+        <ul>
+          <li>Currently pursuing a degree in Marketing, Business Analytics, or related field</li>
+          <li>Strong analytical skills with Excel/Google Sheets</li>
+          <li>Experience with data visualization tools is a plus</li>
+          <li><span class="highlight">Must be authorized to work in the U.S. — OPT/CPT accepted</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Popup -->
+    <div class="popup-overlay" id="popup">
+      <div class="popup-header">
+        <h2>SponsorLens</h2>
+        <div class="tag-line">Apply smarter as an international student.</div>
+        <div class="privacy">Local-first MVP · No resumes · No immigration documents</div>
+      </div>
+
+      <div id="popupLoading" style="display:none">
+        <div class="popup-card">
+          <div class="meta">Analyzing job posting...</div>
+          <div class="loading-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+
+      <div id="popupResult" style="display:none">
+        <div class="popup-card result-card" id="resultCard">
+          <div class="result-header">
+            <h3 id="resultLabel">Strong Fit</h3>
+            <span class="score-pill" id="resultScore">95/100</span>
+          </div>
+          <div class="meta" id="resultMeta">Marketing Analytics Intern · TechVision Inc.</div>
+          <div class="meta" id="resultConf">Confidence: High · Evidence level: Strong</div>
+          <div class="evidence-title">Top evidence</div>
+          <ul class="evidence-list" id="evidenceList">
+            <li>"OPT or CPT are welcome to apply"</li>
+            <li>"E-Verify employer"</li>
+            <li>"OPT/CPT accepted"</li>
+          </ul>
+          <div class="action-text" id="actionText">Apply and tailor your application.</div>
+        </div>
+
+        <div class="popup-card">
+          <div class="evidence-title">Recruiter message studio</div>
+          <div class="variant-btns">
+            <div class="v-btn active">Short clarification</div>
+            <div class="v-btn">Polite message</div>
+            <div class="v-btn">Cover letter</div>
+          </div>
+          <div class="msg-box" id="msgBox">Could you confirm whether candidates on F-1 OPT work authorization are considered for this role? I'd be happy to provide documentation upon request.</div>
+        </div>
+
+        <div class="popup-card">
+          <div class="meta">Estimated time saved: ~40 minutes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fake cursor -->
+  <div class="fake-cursor" id="cursor">
+    <svg viewBox="0 0 24 24" fill="#fff" stroke="#000" stroke-width="1"><path d="M5 3l14 8-6 2-4 6z"/></svg>
+  </div>
+  <div class="click-ripple" id="ripple"></div>
+
+  <!-- Phase label -->
+  <div class="phase-label" id="phaseLabel"></div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <div class="status-dot"></div>
+    <span class="status-text">SponsorLens v2.0 · Local analysis · Zero data transmitted</span>
+  </div>
+</div>
+
+<script>
+const jobs = [
+  {
+    title: 'Marketing Analytics Intern',
+    company: 'TechVision Inc.',
+    logo: 'TV', logoColor: '#3b82f6',
+    location: 'San Francisco, CA · Hybrid · Posted 2 days ago',
+    tags: [{t:'Internship',g:true},{t:'Marketing'},{t:'Analytics'}],
+    url: 'linkedin.com/jobs/view/marketing-analytics-intern',
+    desc: 'We are looking for a motivated Marketing Analytics Intern to join our growing team. This role is ideal for students who are passionate about data-driven marketing.<br/><br/><span class="highlight">International students on OPT or CPT are welcome to apply.</span> We are an <span class="highlight">E-Verify employer</span> and support work authorization.',
+    reqs: '<li>Pursuing a degree in Marketing, Business Analytics, or related field</li><li>Strong analytical skills with Excel/Google Sheets</li><li><span class="highlight">Must be authorized to work in the U.S. — OPT/CPT accepted</span></li>',
+    verdict: 'strong', label: 'Strong Fit', score: '95/100',
+    meta: 'Marketing Analytics Intern · TechVision Inc.',
+    conf: 'Confidence: High · Evidence level: Strong',
+    evidence: ['"OPT or CPT are welcome to apply"', '"E-Verify employer"', '"OPT/CPT accepted"'],
+    action: 'Apply and tailor your application.',
+    msg: 'Could you confirm whether candidates on F-1 OPT work authorization are considered for this role? I\'d be happy to provide documentation upon request.'
+  },
+  {
+    title: 'Business Analyst Intern',
+    company: 'DataFlow Corp',
+    logo: 'DF', logoColor: '#8b5cf6',
+    location: 'Austin, TX · On-site · Posted 5 days ago',
+    tags: [{t:'Internship',g:true},{t:'Business Analysis'},{t:'SQL'}],
+    url: 'linkedin.com/jobs/view/business-analyst-intern-dataflow',
+    desc: 'DataFlow Corp is seeking a Business Analyst Intern to support our product team. You\'ll work with real datasets and help shape product decisions.<br/><br/><span class="highlight warn">Candidates must be authorized to work in the United States.</span> We are unable to provide immigration sponsorship at this time.',
+    reqs: '<li>Pursuing BA/BS in Business, Economics, or STEM field</li><li>SQL proficiency required</li><li><span class="highlight warn">Must be authorized to work in the U.S. without sponsorship</span></li>',
+    verdict: 'risky', label: 'Risky Fit', score: '62/100',
+    meta: 'Business Analyst Intern · DataFlow Corp',
+    conf: 'Confidence: Medium · Evidence level: Mixed',
+    evidence: ['"Must be authorized to work" — ambiguous for OPT', '"Unable to provide immigration sponsorship" — may exclude H-1B only', 'No mention of OPT/CPT specifically'],
+    action: 'Ask the recruiter before applying.',
+    msg: 'I\'m interested in this Business Analyst Intern position. Could you clarify whether candidates with F-1 OPT/CPT work authorization are eligible? I understand the posting mentions sponsorship limitations.'
+  },
+  {
+    title: 'Strategy Analyst',
+    company: 'DefenseTech LLC',
+    logo: 'DT', logoColor: '#ef4444',
+    location: 'Arlington, VA · On-site · Posted 1 day ago',
+    tags: [{t:'Full-time'},{t:'Strategy'},{t:'Cleared'}],
+    url: 'linkedin.com/jobs/view/strategy-analyst-defensetech',
+    desc: 'DefenseTech LLC is hiring a Strategy Analyst to support defense acquisition programs. This position requires access to classified information.<br/><br/><span class="highlight neg">U.S. citizenship is required.</span> Applicants must hold or be eligible for a <span class="highlight neg">Secret security clearance</span>. <span class="highlight neg">No visa sponsorship will be provided.</span>',
+    reqs: '<li>BA/BS in International Relations, Political Science, or related</li><li><span class="highlight neg">Active Secret or Top Secret clearance required</span></li><li><span class="highlight neg">Must be a U.S. citizen — no exceptions</span></li>',
+    verdict: 'low', label: 'Low Fit', score: '8/100',
+    meta: 'Strategy Analyst · DefenseTech LLC',
+    conf: 'Confidence: Very High · Evidence level: Definitive',
+    evidence: ['"U.S. citizenship is required" — excludes all non-citizens', '"Secret security clearance" — citizens only', '"No visa sponsorship will be provided"'],
+    action: 'Skip this job. Time saved: ~40 minutes.',
+    msg: 'This position explicitly requires U.S. citizenship and security clearance. SponsorLens recommends skipping this posting entirely.'
+  }
+];
+
+let currentJob = 0;
+const $ = id => document.getElementById(id);
+
+function moveCursor(x, y, dur = 800) {
+  return new Promise(r => {
+    const c = $('cursor');
+    c.classList.add('visible');
+    c.style.transition = `all ${dur}ms cubic-bezier(0.25,0.46,0.45,0.94)`;
+    c.style.left = x + 'px';
+    c.style.top = y + 'px';
+    setTimeout(r, dur);
+  });
+}
+
+function clickAt(x, y) {
+  return new Promise(r => {
+    const rip = $('ripple');
+    rip.style.left = (x - 15) + 'px';
+    rip.style.top = (y - 15) + 'px';
+    rip.classList.remove('active');
+    void rip.offsetWidth;
+    rip.classList.add('active');
+    setTimeout(r, 300);
+  });
+}
+
+function showPhase(text, dur = 2000) {
+  return new Promise(r => {
+    const p = $('phaseLabel');
+    p.textContent = text;
+    p.classList.add('visible');
+    setTimeout(() => { p.classList.remove('visible'); setTimeout(r, 400); }, dur);
+  });
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function updateJobPage(job) {
+  $('urlText').textContent = job.url;
+  $('jobTitle').textContent = job.title;
+  $('companyName').textContent = job.company;
+  $('companyLogo').textContent = job.logo;
+  $('companyLogo').style.background = `linear-gradient(135deg,${job.logoColor},${job.logoColor}dd)`;
+  $('jobLocation').textContent = job.location;
+  $('jobTags').innerHTML = job.tags.map(t => `<span class="tag${t.g?' green':''}">${t.t}</span>`).join('');
+  $('jobDesc').innerHTML = job.desc;
+  document.querySelector('.job-main .job-text:last-of-type ul').innerHTML = job.reqs;
+  document.querySelectorAll('.sidebar-job').forEach((el, i) => el.classList.toggle('active', i === currentJob));
+}
+
+function updateResult(job) {
+  const rc = $('resultCard');
+  rc.className = 'popup-card result-card ' + job.verdict;
+  $('resultLabel').textContent = job.label;
+  const sp = $('resultScore');
+  sp.textContent = job.score;
+  sp.className = 'score-pill ' + job.verdict;
+  $('resultMeta').textContent = job.meta;
+  $('resultConf').textContent = job.conf;
+  $('evidenceList').innerHTML = job.evidence.map(e => `<li>${e}</li>`).join('');
+  const at = $('actionText');
+  at.textContent = job.action;
+  at.className = 'action-text ' + job.verdict;
+  $('msgBox').textContent = job.msg;
+}
+
+async function runDemo() {
+  while (true) {
+    for (let i = 0; i < jobs.length; i++) {
+      currentJob = i;
+      const job = jobs[i];
+
+      // Phase 1: Navigate to job
+      $('popup').classList.remove('visible');
+      $('popupLoading').style.display = 'none';
+      $('popupResult').style.display = 'none';
+
+      await showPhase(`Step 1: Open ${job.title}`, 1800);
+      
+      // Move cursor to sidebar job
+      const sidebarY = 80 + i * 65;
+      await moveCursor(180, sidebarY);
+      await clickAt(180, sidebarY);
+      updateJobPage(job);
+      await wait(1200);
+
+      // Phase 2: Click extension
+      await showPhase('Step 2: Click SponsorLens', 1500);
+      await moveCursor(1060, 21, 600);
+      await clickAt(1060, 21);
+      await wait(300);
+
+      // Show popup with loading
+      $('popup').classList.add('visible');
+      $('popupLoading').style.display = 'block';
+      $('popupResult').style.display = 'none';
+      
+      await showPhase('Analyzing job posting...', 2500);
+      await wait(1000);
+
+      // Phase 3: Show result
+      $('popupLoading').style.display = 'none';
+      updateResult(job);
+      $('popupResult').style.display = 'block';
+
+      const verdictLabel = job.verdict === 'strong' ? 'Strong Fit — Apply!' : job.verdict === 'risky' ? 'Risky — Ask recruiter first' : 'Low Fit — Skip, save 40 min';
+      await showPhase(`Verdict: ${verdictLabel}`, 2500);
+
+      // Let user read result
+      await wait(4000);
+
+      // Hide cursor, close popup
+      $('cursor').classList.remove('visible');
+      await wait(800);
+      $('popup').classList.remove('visible');
+      await wait(1200);
+    }
+    // Loop pause
+    await showPhase('Demo complete — restarting...', 2000);
+    await wait(1500);
+  }
+}
+
+// Start
+runDemo();
+</script>
+</body>
+</html>
