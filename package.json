@@ -1,0 +1,10 @@
+{
+  "name": "sponsorlens",
+  "version": "0.1.0",
+  "description": "Local-first Chrome extension for international student job-posting risk analysis.",
+  "scripts": {
+    "test": "node tests/analyzer.test.js && node tests/security.test.js",
+    "test:analyzer": "node tests/analyzer.test.js",
+    "test:security": "node tests/security.test.js"
+  }
+}
