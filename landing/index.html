@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SponsorLens — Apply Smarter as an International Student</title>
-  <meta name="description" content="A local-first Chrome extension that helps international students analyze job postings for work-authorization signals and decide whether to apply, clarify, or skip." />
+  <title>SponsorLens — Stop Applying Blindly</title>
+  <meta name="description" content="A local-first Chrome extension that reads job postings and tells international students whether to apply, clarify, or skip — before wasting 40 minutes." />
+  <meta property="og:title" content="SponsorLens — Stop Applying Blindly" />
+  <meta property="og:description" content="Chrome extension for international students. Reads job descriptions, detects work-authorization friction, gives a clear decision." />
+  <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -12,182 +15,364 @@
 </head>
 <body>
 
-  <!-- ===== HERO ===== -->
-  <header class="hero">
-    <div class="hero-glow"></div>
-    <div class="container">
-      <div class="badge">Built with Codex · OpenAI × Handshake Creator Challenge</div>
-      <h1>Sponsor<span class="accent">Lens</span></h1>
-      <p class="subtitle">Apply smarter as an international student.</p>
-      <p class="lead">A Chrome extension that reads visible job postings, detects work-authorization friction, flags contradictions, and gives you a clear <strong>Apply / Clarify / Skip</strong> decision — before you waste 40 minutes on a long application.</p>
-      <div class="cta-row">
-        <a href="https://github.com/Fredess74/SponsorLens" class="btn btn-primary" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          View on GitHub
-        </a>
-        <a href="#demo" class="btn btn-secondary">Watch Demo ↓</a>
-        <a href="#install" class="btn btn-secondary">Install Locally</a>
+  <!-- ===== STICKY NAV ===== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Sponsor<span>Lens</span></a>
+      <div class="nav-links">
+        <a href="#problem">Problem</a>
+        <a href="#product">Product</a>
+        <a href="#demo">Demo</a>
+        <a href="#privacy">Trust</a>
+        <a href="https://github.com/Fredess74/SponsorLens" class="nav-cta" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO (Z-pattern: logo top-left, badge top-right, CTA bottom-right) ===== -->
+  <header class="hero" id="top">
+    <div class="hero-bg"></div>
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="badge">OpenAI x Handshake Creator Challenge</div>
+        <h1>Stop applying<br/>to jobs you<br/><span class="gradient-text">can't legally start.</span></h1>
+        <p class="lead">SponsorLens reads job descriptions that international students spend 40 minutes decoding — and gives a clear <strong>Apply, Clarify, or Skip</strong> verdict in seconds.</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-num">25+</span>
+            <span class="stat-label">Signal patterns detected</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">40 min</span>
+            <span class="stat-label">Saved per skipped application</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">0</span>
+            <span class="stat-label">Data leaves your browser</span>
+          </div>
+        </div>
+        <div class="cta-row">
+          <a href="https://github.com/Fredess74/SponsorLens" class="btn btn-primary" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            View on GitHub
+          </a>
+          <a href="#demo" class="btn btn-ghost">See it work</a>
+          <a href="#install" class="btn btn-ghost">Install locally</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="mockup-window">
+          <div class="mockup-dots"><span></span><span></span><span></span></div>
+          <div class="mockup-content">
+            <div class="mockup-header">SponsorLens</div>
+            <div class="mockup-verdict strong">Strong Fit</div>
+            <div class="mockup-score">95<small>/100</small></div>
+            <div class="mockup-signals">
+              <div class="signal positive">OPT candidates welcome</div>
+              <div class="signal positive">CPT eligible</div>
+              <div class="signal positive">E-Verify employer</div>
+            </div>
+            <div class="mockup-action">Apply and tailor your application.</div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- ===== PROBLEM ===== -->
+  <!-- ===== PROBLEM (Emotional hook — answer "Why should I care?") ===== -->
   <section class="section" id="problem">
     <div class="container">
-      <h2 class="section-title">International students don't need more job listings.<br/><span class="accent">They need clarity.</span></h2>
+      <div class="section-header">
+        <p class="overline">The problem</p>
+        <h2>International students lose hours<br/>to jobs they were never eligible for.</h2>
+        <p class="section-sub">Job boards let employers self-report sponsorship fields. Those fields can be incomplete, outdated, or contradicted by the actual job description.</p>
+      </div>
       <div class="grid-3">
-        <div class="problem-card">
-          <div class="problem-icon">🔲</div>
-          <h3>Self-reported checkboxes</h3>
-          <p>Job boards display what employers selected — but those fields can be incomplete, outdated, or wrong.</p>
+        <div class="card">
+          <div class="card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15h6"/></svg>
+          </div>
+          <h3>Unreliable checkboxes</h3>
+          <p>Employer-selected fields are often self-reported, incomplete, or never updated after the role changes.</p>
         </div>
-        <div class="problem-card">
-          <div class="problem-icon">⚠️</div>
+        <div class="card">
+          <div class="card-icon warning">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
           <h3>Hidden contradictions</h3>
-          <p>"Sponsorship available" in the checkbox, but "no visa sponsorship" buried in paragraph 8 of the description.</p>
+          <p>"Sponsorship available" in the filter, but "no visa sponsorship" buried in paragraph 8 of the description.</p>
         </div>
-        <div class="problem-card">
-          <div class="problem-icon">⏰</div>
-          <h3>Wasted hours</h3>
-          <p>Students spend 30–60 minutes per application — only to discover restrictive language after submitting.</p>
+        <div class="card">
+          <div class="card-icon danger">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>30–60 minutes wasted</h3>
+          <p>Students spend up to an hour per application — only to discover restrictive language after submitting.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== HOW IT WORKS ===== -->
-  <section class="section section-alt" id="solution">
+  <!-- ===== PRODUCT (Answer "What does it do?") ===== -->
+  <section class="section section-dark" id="product">
     <div class="container">
-      <h2 class="section-title">SponsorLens adds the missing decision layer.</h2>
-      <p class="section-subtitle">Handshake shows what employers selected. SponsorLens reads what the posting actually says.</p>
-      <div class="flow-steps">
-        <div class="flow-step"><span class="step-num">1</span><span>Open any job posting</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step"><span class="step-num">2</span><span>Click SponsorLens</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step"><span class="step-num">3</span><span>Get your verdict</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step"><span class="step-num">4</span><span>Apply, clarify, or skip</span></div>
+      <div class="section-header light">
+        <p class="overline">The solution</p>
+        <h2>One click. Clear decision.</h2>
+        <p class="section-sub">Handshake shows what employers selected. SponsorLens reads what the posting actually says.</p>
+      </div>
+      <div class="steps-row">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p>Open any job posting</p>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p>Click SponsorLens</p>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p>Get your verdict</p>
+        </div>
+        <div class="step-line"></div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <p>Apply, clarify, or skip</p>
+        </div>
+      </div>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h4>Full-text analysis</h4>
+          <p>Reads the actual job description, not employer-selected metadata.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h4>Contradiction detection</h4>
+          <p>Catches when positive and negative signals coexist in the same posting.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <h4>Profile-aware scoring</h4>
+          <p>Adjusts results for your path — CPT, OPT, STEM OPT, or full-time.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <h4>Recruiter message studio</h4>
+          <p>Three message variants ready to copy. Ask the right question without overpromising.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== PRODUCT DEMO ===== -->
+  <!-- ===== DEMO (Social proof through product evidence) ===== -->
   <section class="section" id="demo">
     <div class="container">
-      <h2 class="section-title">See it in action.</h2>
+      <div class="section-header">
+        <p class="overline">Live output</p>
+        <h2>Three verdicts. One clear system.</h2>
+        <p class="section-sub">Every analysis returns a score, evidence, contradictions, and a recommended action.</p>
+      </div>
       <div class="demo-grid">
-        <div class="demo-card strong">
-          <div class="demo-badge strong-bg">🟢 Strong Fit · 95/100</div>
+        <div class="demo-card">
+          <div class="demo-top strong-border">
+            <span class="verdict-badge strong-badge">Strong Fit</span>
+            <span class="verdict-score">95/100</span>
+          </div>
           <h3>Marketing Analytics Intern</h3>
-          <p class="demo-evidence"><strong>Detected:</strong> "OPT candidates welcome" · "CPT eligible" · "E-Verify employer" · "international students encouraged"</p>
-          <p class="demo-action">✅ Apply and tailor your application. Include your work-authorization timeline only if asked.</p>
+          <div class="evidence-list">
+            <span class="evidence positive">OPT candidates welcome</span>
+            <span class="evidence positive">CPT eligible</span>
+            <span class="evidence positive">E-Verify employer</span>
+            <span class="evidence positive">International students encouraged</span>
+          </div>
+          <p class="demo-recommendation">Apply and tailor your application. Include your work-authorization timeline only if asked.</p>
         </div>
-        <div class="demo-card risky">
-          <div class="demo-badge risky-bg">🟡 Risky Fit · 62/100</div>
+        <div class="demo-card">
+          <div class="demo-top risky-border">
+            <span class="verdict-badge risky-badge">Risky Fit</span>
+            <span class="verdict-score">62/100</span>
+          </div>
           <h3>Business Analyst Intern</h3>
-          <p class="demo-evidence"><strong>Detected:</strong> "must be authorized to work in the U.S." · "work authorization required" · sponsorship status unclear</p>
-          <p class="demo-action">⚠️ Don't spend 40 minutes yet. Ask the recruiter to clarify first.</p>
+          <div class="evidence-list">
+            <span class="evidence neutral">Must be authorized to work</span>
+            <span class="evidence neutral">Work authorization required</span>
+            <span class="evidence warning">Sponsorship status unclear</span>
+          </div>
+          <p class="demo-recommendation caution">Don't spend 40 minutes yet. Ask the recruiter to clarify first.</p>
         </div>
-        <div class="demo-card low">
-          <div class="demo-badge low-bg">🔴 Low Fit · 12/100</div>
+        <div class="demo-card">
+          <div class="demo-top low-border">
+            <span class="verdict-badge low-badge">Low Fit</span>
+            <span class="verdict-score">12/100</span>
+          </div>
           <h3>Strategy Analyst</h3>
-          <p class="demo-evidence"><strong>Detected:</strong> "U.S. citizens only" · "security clearance required" · "no visa sponsorship now or in the future"</p>
-          <p class="demo-action">🚫 Skip this role. Estimated time saved: 40 minutes.</p>
+          <div class="evidence-list">
+            <span class="evidence negative">U.S. citizens only</span>
+            <span class="evidence negative">Security clearance required</span>
+            <span class="evidence negative">No visa sponsorship</span>
+          </div>
+          <p class="demo-recommendation skip">Skip this role. Estimated time saved: 40 minutes.</p>
         </div>
-        <div class="demo-card message">
-          <div class="demo-badge msg-bg">✉️ Recruiter Message Studio</div>
-          <h3>Ready-to-send clarification</h3>
-          <p class="demo-message">"Could you confirm whether candidates with F-1 OPT/CPT work authorization are considered for this role? I understand this depends on company policy and role requirements."</p>
-          <p class="demo-detail">Three variants: short clarification, polite recruiter message, cover letter paragraph. Copy in one click.</p>
+      </div>
+      <!-- Message Studio -->
+      <div class="message-studio">
+        <div class="studio-header">
+          <h3>Recruiter Message Studio</h3>
+          <p>Three variants. One click to copy. Ask the right question.</p>
+        </div>
+        <div class="studio-message">
+          <p>"Could you confirm whether candidates with F-1 OPT/CPT work authorization are considered for this role? I understand this depends on company policy and role requirements."</p>
+        </div>
+        <div class="studio-variants">
+          <span class="variant active">Short clarification</span>
+          <span class="variant">Polite recruiter message</span>
+          <span class="variant">Cover letter paragraph</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== WHY DIFFERENT ===== -->
-  <section class="section section-alt" id="why">
+  <!-- ===== TRUST / PRIVACY (Remove objections) ===== -->
+  <section class="section section-dark" id="privacy">
     <div class="container">
-      <h2 class="section-title">Job-board checkboxes are useful.<br/><span class="accent">SponsorLens goes further.</span></h2>
-      <div class="grid-2">
-        <div class="diff-card">
-          <h3>🔍 Reads the actual text</h3>
-          <p>Analyzes the full job description, not just employer-selected fields that can be self-reported or outdated.</p>
+      <div class="section-header light">
+        <p class="overline">Trust & privacy</p>
+        <h2>Built for the most sensitive job search.</h2>
+        <p class="section-sub">International students handle immigration documents, government IDs, and visa timelines. SponsorLens never touches any of it.</p>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-item">
+          <div class="trust-icon shield">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <h4>Local-first analysis</h4>
+            <p>Everything runs in your browser. No data is sent anywhere.</p>
+          </div>
         </div>
-        <div class="diff-card">
-          <h3>⚡ Flags contradictions</h3>
-          <p>Catches when "sponsorship available" appears alongside "no visa sponsorship" — something no checkbox reveals.</p>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <div>
+            <h4>No personal data collected</h4>
+            <p>No resumes, no immigration docs, no government IDs. Ever.</p>
+          </div>
         </div>
-        <div class="diff-card">
-          <h3>👤 Profile-aware scoring</h3>
-          <p>Adjusts results based on your specific path — CPT, OPT, STEM OPT, or full-time.</p>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <div>
+            <h4>Zero external API calls</h4>
+            <p>No network requests in the MVP. Content Security Policy enforced.</p>
+          </div>
         </div>
-        <div class="diff-card">
-          <h3>💬 Actionable next steps</h3>
-          <p>Doesn't just show data. Gives you a recruiter-safe message ready to copy and send.</p>
+        <div class="trust-item">
+          <div class="trust-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div>
+            <h4>15 automated tests</h4>
+            <p>Including 6 dedicated security checks. Runs on every commit.</p>
+          </div>
+        </div>
+        <div class="trust-item full-width">
+          <div class="trust-icon subtle">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <h4>Not legal, immigration, or employment advice</h4>
+            <p>SponsorLens is decision support. It replaces wasted time, not professional counsel.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== PRIVACY ===== -->
-  <section class="section" id="privacy">
+  <!-- ===== BUILT WITH (Technical credibility for judges) ===== -->
+  <section class="section" id="tech">
     <div class="container">
-      <h2 class="section-title">Built for trust from day one.</h2>
-      <div class="privacy-grid">
-        <div class="privacy-item"><span class="privacy-icon">🔒</span> Local-first analysis — no data leaves your browser</div>
-        <div class="privacy-item"><span class="privacy-icon">❌</span> No resumes collected</div>
-        <div class="privacy-item"><span class="privacy-icon">❌</span> No immigration documents collected</div>
-        <div class="privacy-item"><span class="privacy-icon">❌</span> No government IDs collected</div>
-        <div class="privacy-item"><span class="privacy-icon">❌</span> No external API calls in MVP</div>
-        <div class="privacy-item"><span class="privacy-icon">🛡️</span> Content Security Policy enforced</div>
-        <div class="privacy-item"><span class="privacy-icon">✅</span> 15 automated tests including 6 security checks</div>
-        <div class="privacy-item"><span class="privacy-icon">📋</span> Not legal, immigration, or employment advice</div>
+      <div class="section-header">
+        <p class="overline">Under the hood</p>
+        <h2>From prompt to working product.</h2>
+        <p class="section-sub">Built with Codex as a fully functional Chrome extension with tests, documentation, and privacy guardrails.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== TECHNICAL ===== -->
-  <section class="section section-alt" id="tech">
-    <div class="container">
-      <h2 class="section-title">From prompt to working product.</h2>
-      <p class="section-subtitle">Built with Codex as a fully functional Chrome extension with tests, documentation, and privacy guardrails.</p>
-      <div class="tech-grid">
-        <div class="tech-item">Chrome Manifest V3</div>
-        <div class="tech-item">25+ signal patterns</div>
-        <div class="tech-item">Contradiction detection</div>
-        <div class="tech-item">15 automated tests</div>
-        <div class="tech-item">Security policy + CSP</div>
-        <div class="tech-item">CI/CD pipeline</div>
-        <div class="tech-item">Full documentation</div>
-        <div class="tech-item">Zero dependencies</div>
+      <div class="tech-pills">
+        <span>Chrome Manifest V3</span>
+        <span>25+ signal patterns</span>
+        <span>Contradiction engine</span>
+        <span>15 automated tests</span>
+        <span>Content Security Policy</span>
+        <span>CI/CD pipeline</span>
+        <span>Full documentation suite</span>
+        <span>Zero runtime dependencies</span>
       </div>
     </div>
   </section>
 
   <!-- ===== INSTALL ===== -->
-  <section class="section" id="install">
+  <section class="section section-subtle" id="install">
     <div class="container">
-      <h2 class="section-title">Try it yourself.</h2>
-      <div class="install-steps">
-        <div class="install-step"><span class="step-num">1</span> Clone the repo: <code>git clone https://github.com/Fredess74/SponsorLens.git</code></div>
-        <div class="install-step"><span class="step-num">2</span> Open <code>chrome://extensions</code> and enable Developer Mode</div>
-        <div class="install-step"><span class="step-num">3</span> Click <strong>Load unpacked</strong> → select the <code>extension/</code> folder</div>
-        <div class="install-step"><span class="step-num">4</span> Navigate to any job posting and click the SponsorLens icon</div>
+      <div class="section-header">
+        <p class="overline">Try it yourself</p>
+        <h2>Install in 60 seconds.</h2>
+      </div>
+      <div class="install-grid">
+        <div class="install-step">
+          <div class="step-num">1</div>
+          <div>
+            <h4>Clone the repository</h4>
+            <code>git clone https://github.com/Fredess74/SponsorLens.git</code>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">2</div>
+          <div>
+            <h4>Open Chrome extensions</h4>
+            <code>chrome://extensions</code>
+            <p>Enable Developer Mode (toggle, top right)</p>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">3</div>
+          <div>
+            <h4>Load the extension</h4>
+            <p>Click <strong>Load unpacked</strong> and select the <code>extension/</code> folder</p>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">4</div>
+          <div>
+            <h4>Analyze any job posting</h4>
+            <p>Navigate to a listing and click the SponsorLens icon</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== CTA FOOTER ===== -->
-  <footer class="footer">
+  <!-- ===== CTA FOOTER (Final conversion point — Z-pattern endpoint) ===== -->
+  <footer class="footer" id="cta">
     <div class="container">
       <h2>Stop applying blindly.</h2>
-      <p class="footer-sub">SponsorLens doesn't replace legal advice. It replaces wasted time with clarity.</p>
+      <p class="footer-sub">SponsorLens doesn't replace legal advice.<br/>It replaces wasted time with clarity.</p>
       <div class="cta-row cta-center">
-        <a href="https://github.com/Fredess74/SponsorLens" class="btn btn-primary" target="_blank" rel="noopener">View GitHub</a>
-        <a href="https://github.com/Fredess74/SponsorLens/tree/main/docs" class="btn btn-secondary" target="_blank" rel="noopener">Read Docs</a>
+        <a href="https://github.com/Fredess74/SponsorLens" class="btn btn-primary" target="_blank" rel="noopener">View on GitHub</a>
+        <a href="https://github.com/Fredess74/SponsorLens/tree/main/docs" class="btn btn-ghost" target="_blank" rel="noopener">Read documentation</a>
       </div>
-      <p class="footer-credits">SponsorLens · Built with Codex for the OpenAI × Handshake Creator Challenge · 2026</p>
+      <p class="footer-credits">SponsorLens · Built with Codex · OpenAI x Handshake Creator Challenge · 2026</p>
     </div>
   </footer>
 
